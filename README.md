@@ -9,7 +9,6 @@
 ![Static Badge](https://img.shields.io/badge/Spring%20Boot-darkgreen)
 ![Static Badge](https://img.shields.io/badge/%D0%91%D0%94%3A%20Postgres-purple)
 ![Static Badge](https://img.shields.io/badge/Tests:Junit%20%2B%20Mockito-red)
-![Static Badge](https://img.shields.io/badge/Gradle-magenta)
 ![Static Badge](https://img.shields.io/badge/Git-green)
 
 ### Базовое верхнеуровневое представление:  
@@ -26,7 +25,6 @@
   <br/><br/>
   <b><a href="https://gpb.fut.ru/itfactory/backend?utm_source=gpb&utm_medium=expert&utm_campaign=recommend&utm_content=all">GBP IT-factory</a></b> | <b><a href="">Документация(_пока пуста_)</a></b> | <b><a href="">Демо(_пока пуста_)</a></b> | <b><a href="https://github.com/gpb-it-factory/khasmamedov-telergam-bot">GitHub</a></b> | <b><a href="#Как_запустить_и_начать_работу">Запуск и начало работы</a></b>
   <br/><br/>
-  <a href="https://github.com/gpb-it-factory/khasmamedov-telergam-bot/CHANGELOG.md"><img src="https://img.shields.io/github/package-json/v/gpb-it-factory/khasmamedov-telergam-bot?logo=hackthebox&color=609966&logoColor=fff" alt="Current Version"/></a>
   <a target="_blank" href="https://github.com/gpb-it-factory/khasmamedov-telergam-bot"><img src="https://img.shields.io/github/last-commit/gpb-it-factory/khasmamedov-telergam-bot?logo=github&color=609966&logoColor=fff" alt="Last commit"/></a>
   <br/><br/>
 
@@ -38,9 +36,7 @@ participant Telegram
 participant Service
 participant Backend
 
-activate Клиент
 Клиент -> Telegram: Запрос на действие со счетом:\n проверить баланс,\n пополнить,\n снять деньги,\n перевести
-deactivate Клиент
 activate Telegram
 Telegram -> Service: Валидация запроса
 deactivate Telegram
@@ -51,8 +47,6 @@ alt Вернуть клиенту запрос на доработку
     activate Telegram
     Telegram -> Клиент: Клиент перепроверяет запрос;\n завершает работу, либо шлет запрос заново
     deactivate Telegram
-    activate Клиент
-    deactivate Клиент
 else Запрос уже прошел цепочку клиент-телеграм-сервис + в сервисе успешно прошел проверку
     activate Service
     Service -> Service: Бизнес-логика
@@ -68,11 +62,14 @@ else Запрос уже прошел цепочку клиент-телегра
 end    
 Telegram -> Клиент: возврат данных
 deactivate Telegram
-deactivate Клиент
 @endUML
 ```
 
 ### Как_запустить_и_начать_работу
-((пока пусто))
-
-
+1. Скачать проект с репозитория выше целиком [перейдя по ссылке на гитхаб](https://github.com/gpb-it-factory/khasmamedov-telergam-bot)  
+_Далее, действия проводить в терминале (IDEA)_ 
+3. Набрать: 
+````gradle build````
+3. Запустить проект: 
+````java -jar ./build/libs/khasmamedov-telegram-bot-0.0.1-SNAPSHOT.jar>````  
+   ((или, например, из командной строки с полным путем до jar-файла:  `C:\Users\Тимур\IdeaProjects\khasmamedov-telergam-bot\build\libs\khasmamedov-telegram-bot-0.0.1-SNAPSHOT.jar`))
