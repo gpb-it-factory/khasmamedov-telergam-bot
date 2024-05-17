@@ -1,0 +1,3 @@
+bot:
+  name: SomeBankBot
+  token: ${bot.token}

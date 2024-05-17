@@ -1,0 +1,9 @@
+2024-05-18 00:29:04.332 [main] INFO  ru.gpb.app.KhasmamedovTelegramBot - Starting KhasmamedovTelegramBot using Java 17.0.4.1 on DESKTOP-TJBV0JI with PID 16704 (C:\Users\timk0\Desktop\ideaprojects\IdeaProjects\khasmamedov-telergam-bot\build\classes\java\main started by timk0 in C:\Users\timk0\Desktop\ideaprojects\IdeaProjects\khasmamedov-telergam-bot)
+2024-05-18 00:29:04.335 [main] INFO  ru.gpb.app.KhasmamedovTelegramBot - No active profile set, falling back to 1 default profile: "default"
+2024-05-18 00:29:05.168 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+2024-05-18 00:29:05.170 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2024-05-18 00:29:05.171 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.68]
+2024-05-18 00:29:05.267 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2024-05-18 00:29:05.720 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+2024-05-18 00:29:06.096 [main] INFO  ru.gpb.app.KhasmamedovTelegramBot - Started KhasmamedovTelegramBot in 2.339 seconds (JVM running for 2.889)
+2024-05-18 00:29:18.042 [SomeBankBot Telegram Executor] INFO  r.g.a.component.AppBankBotComponent - "hi" отправлено в чат '868047670'
