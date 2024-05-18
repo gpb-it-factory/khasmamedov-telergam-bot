@@ -23,7 +23,9 @@
   <br/><br/>
   3. Второй слой, или БД (аналог ДАО) - служит для хранения и обработки данных
   <br/><br/>
-  <b><a href="https://gpb.fut.ru/itfactory/backend?utm_source=gpb&utm_medium=expert&utm_campaign=recommend&utm_content=all">GBP IT-factory</a></b> | <b><a href="">Документация(_пока пуста_)</a></b> | <b><a href="">Демо(_пока пуста_)</a></b> | <b><a href="https://github.com/gpb-it-factory/khasmamedov-telergam-bot">GitHub</a></b> | <b><a href="#Как_запустить_и_начать_работу">Запуск и начало работы</a></b>
+  <b><a href="https://gpb.fut.ru/itfactory/backend?utm_source=gpb&utm_medium=expert&utm_campaign=recommend&utm_content=all">GBP IT-factory</a></b> | <b><a href="">Документация(_пока пуста_)</a></b> | <b><a href="">Демо(_пока пуста_)</a></b> | <b><a href="https://github.com/gpb-it-factory/khasmamedov-telergam-bot">GitHub</a></b> <br>  
+  <b><a href="#Как_запустить_и_начать_работу">Запуск и начало работы</a></b> <br>
+  <b><a href="#Команды_бота">Команды_бота</a></b>
   <br/><br/>
   <a target="_blank" href="https://github.com/gpb-it-factory/khasmamedov-telergam-bot"><img src="https://img.shields.io/github/last-commit/gpb-it-factory/khasmamedov-telergam-bot?logo=github&color=609966&logoColor=fff" alt="Last commit"/></a>
   <br/><br/>
@@ -89,9 +91,13 @@ deactivate Telegram
    в последнем случае (Б), на вопрос:  
    ````Завершить выполнение пакетного файла [Y(да)/N(нет)]?```` -> y
 
+### Команды_бота
+/ping -> pong
+/help -> no help for you now, use '/ping' command instead
+любая команда (да, **совершенно** любая) -> no such command
+
 ******
 
 todo:
-4. хендлеры и апдейт "по уму"
-5. докер
+5. запуск докер
 
