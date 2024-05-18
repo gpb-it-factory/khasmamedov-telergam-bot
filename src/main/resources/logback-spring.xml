@@ -17,8 +17,8 @@
         <file>${LOG_PATH}myapp.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${LOG_PATH}myapp-%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>30</maxHistory> <!-- Keep 30 days of history -->
-            <totalSizeCap>1GB</totalSizeCap> <!-- Total size cap for all log files -->
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
         </rollingPolicy>
         <encoder>
             <pattern>${LOG_PATTERN}</pattern>
@@ -30,8 +30,8 @@
         <file>${LOG_PATH}error.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${LOG_PATH}error-%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>30</maxHistory> <!-- Keep 30 days of history -->
-            <totalSizeCap>1GB</totalSizeCap> <!-- Total size cap for all log files -->
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
         </rollingPolicy>
         <encoder>
             <pattern>${LOG_PATTERN}</pattern>
@@ -50,7 +50,7 @@
     </logger>
 
     <!-- Error logger for Java classes -->
-    <logger name="ru.gbp.app.component." level="ERROR">
+    <logger name="ru.gbp.app.KhasmamedovTelegramBot" level="ERROR">
         <appender-ref ref="ERROR_FILE"/>
     </logger>
 

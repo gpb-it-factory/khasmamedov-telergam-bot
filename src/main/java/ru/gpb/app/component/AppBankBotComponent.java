@@ -11,27 +11,20 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Slf4j
 @Component
-//@RequiredArgsConstructor
 public class AppBankBotComponent extends TelegramLongPollingBot {
 
     private final String botUsername;
-    //private final String botToken;
 
     @Autowired
     public AppBankBotComponent(@Value("${bot.name}") String botUsername, @Value("${bot.token}") String botToken) {
-        //this.botToken = botToken;
-                super(botToken);
+        super(botToken);
         this.botUsername = botUsername;
     }
+
     @Override
     public String getBotUsername() {
         return botUsername;
     }
-
-/*    @Override
-    public String getBotToken() {
-        //return botToken;
-    }*/
 
     @Override
     public void onUpdateReceived(Update update) {
@@ -39,13 +32,12 @@ public class AppBankBotComponent extends TelegramLongPollingBot {
             String msg = update.getMessage().getText();
             Long currChatId = update.getMessage().getChatId();
 
-            //тут добавить логику, пинг-понг - базовый функционал
             switch (msg) {
-                case "/start":
-                    sendMessage(currChatId, "hi!");
+                case "/ping":
+                    sendMessage(currChatId, "pong");
                     break;
                 default:
-                    sendMessage(currChatId, "wrong msg");
+                    sendMessage(currChatId, "Дефолтное сообщение");
             }
         }
     }
@@ -58,11 +50,10 @@ public class AppBankBotComponent extends TelegramLongPollingBot {
 
         try {
             execute(message);
-            log.info("\"hi\" отправлено в чат '{}'", chatId); //placeholder на мессагу ?
+            log.info("{} только что отправлено в чат '{}'", message, chatId);
         } catch (TelegramApiException e) {
-            log.error("Ошибка при отправке сообщения бота", e); // отрефакторить ?
+            log.error("Ошибка при отправке сообщения бота", e);
         }
     }
-
 }
 
