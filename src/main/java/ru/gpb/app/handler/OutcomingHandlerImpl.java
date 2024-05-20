@@ -4,30 +4,24 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Component
 public class OutcomingHandlerImpl implements OutcomingHandler {
 
-    private final Map<String, String> messageMap = new HashMap<>();
+    private final Map<String, Command> messageMap;
 
-    public OutcomingHandlerImpl() {
-        messageMap.put("/ping", "pong");
-        messageMap.put("/help", "no help for you now, use '/ping' command instead");
+    public OutcomingHandlerImpl(Map<String, Command> messageMap) {
+        this.messageMap = messageMap;
     }
 
     @Override
     public SendMessage outputtingMessageSender(Message message) {
+        String response = messageMap.containsKey(message.getText()) ?
+                messageMap.get(message.getText()).executeTextCommand() : "where is no place like home";
         return SendMessage.builder()
-                .chatId(message.getChatId())
-                .text(
-                        messageMap.
-                                getOrDefault(
-                                        message.getText(),
-                                        "no such command"
-                                )
-                )
+                .chatId(message.getChatId().toString())
+                .text(response)
                 .build();
     }
 }

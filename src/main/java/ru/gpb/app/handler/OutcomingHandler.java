@@ -5,5 +5,5 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 
 public interface OutcomingHandler {
 
-    SendMessage outputtingMessageSender(Message message);
+    public SendMessage outputtingMessageSender(Message message);
 }
