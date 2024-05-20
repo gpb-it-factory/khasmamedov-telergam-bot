@@ -14,5 +14,4 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
-telegram_error.log
-telegram_myapp.log
+telegram_*.log

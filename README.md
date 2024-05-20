@@ -82,10 +82,12 @@ deactivate Telegram
    ````git clone git@github.com:gpb-it-factory/khasmamedov-telergam-bot.git````  
    _в обоих случаях среда разработки сама подтянет gradle и зависимости_
 2. [x] Запустить проект:    
-   * Собрать проект (в готовый к исполнению файл)   
-   ````gradle build````  
+   * Собрать проект в готовый к исполнению файл   
+     ````gradle build````  (если есть установленный грэдл)
+      + ИЛИ же ````gradlew build````  (если такового нет на Windows)
+      + ИЛИ же ````chmod +x gradlew```` ````./gradlew build```` (если такового нет на Linux)
    Запустить его с параметрами:  
-   ````java -jar ./build/libs/khasmamedov-telegram-bot-0.0.1-SNAPSHOT.jar>````    
+   ````java -jar ./build/libs/khasmamedov-telegram-bot-0.0.1-SNAPSHOT.jar --bot.token="здесь ваш токен>"````
    , где после команды -jar идет путь (полный или относительный) до сборки
    обычно это build/libs/  
    * Или, **проще** - такая команда не требует собирать проект самостоятельно и все сделает за вас:  
@@ -96,7 +98,7 @@ deactivate Telegram
    в последнем случае (Б), на вопрос:  
    ````Завершить выполнение пакетного файла [Y(да)/N(нет)]?```` -> y
 3. [x] Запустить проект с помощью докера.  
-   * Если у вас еще нет докера, его нужно скачать под вашу систему, иначе способ 3 не заработает:  
+   * Если у вас еще нет докера, его нужно скачать под вашу систему, иначе способ 3 не заработает - не забудьте запустить сам докер после установки:      
    [тык](https://docs.docker.com/get-docker/)  
    * Такая команда создаст в докере image (посмотреть docker -> images в системе)  
    `docker build -t telegram-bot .`
@@ -106,6 +108,10 @@ deactivate Telegram
    * Или, если вы хотите видеть результаты работы программы, включая логи и возможные ошибки:
      `docker run --name telegram-bot -it -e bot.token="здесь ваш токен" telegram-bot`  
      _ctrl+c, чтобы выйти из приложения в данном случае_
+   * примечание. Если вы видите ошибку типа `docker: Error response from daemon: Conflict. The container name "/такой-то" is already in use by container "23a960d080bd5798917cb70c5a33992c3ae2a715a9cd0187822cab80f632973e". You have to remove (or rename) that container to be able to reuse that name.`,  
+     вам потребуется остановить это контейнер перед тем как запускать программу:  
+     `docker stop 23a960d080bd5798917cb70c5a33992c3ae2a715a9cd0187822cab80f632973e`
+     `docker rm 23a960d080bd5798917cb70c5a33992c3ae2a715a9cd0187822cab80f632973e`
 
 После запуска приложения можно открывать телеграм [web-версию](https://web.telegram.org), найти `@SomeBankBot`
 и использовать <b><a href="#Команды_бота">Команды_бота</a></b> в нем
