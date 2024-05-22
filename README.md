@@ -148,7 +148,7 @@ deactivate Telegram
 
 * /ping -> pong  
 * /help -> no help for you now, use '/ping' command instead  
-* любая команда (да, **совершенно** любая) -> no such command
+* любая иная команда -> where is no place like home
 
 </details>
 
