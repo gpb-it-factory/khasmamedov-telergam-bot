@@ -13,7 +13,6 @@ import ru.gpb.app.handler.OutcomingHandler;
 @Slf4j
 @Component
 public class AppBankBotComponent extends TelegramLongPollingBot {
-
     private final String botUsername;
     private final OutcomingHandler outcomingHandler;
 
