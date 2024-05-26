@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import ru.gpb.app.dto.CreateUserRequest;
+import ru.gpb.app.dto.UserResponse;
 
 @Service
 @Slf4j
@@ -24,8 +25,8 @@ public class RegistrationService {
     public String register(CreateUserRequest request) {
         String url = middleUrl + "/users";
         try {
-            log.info("Регистрирую пользователя с Айди: {}", request.userId());
-            ResponseEntity<Void> response = restTemplate.postForEntity(url, request, Void.class);
+            log.info("Registering user with id: {}", request.userId());
+            ResponseEntity<UserResponse> response = restTemplate.postForEntity(url, request, UserResponse.class);
             return handleResponse(response, request);
         } catch (HttpStatusCodeException e) {
             return handleHttpStatusCodeException(e);
@@ -34,27 +35,27 @@ public class RegistrationService {
         }
     }
 
-    private String handleResponse(ResponseEntity<Void> response, CreateUserRequest request) {
-        if (response.getStatusCode() != HttpStatus.NO_CONTENT) {
-            String errorMessage = "Ну удалось зарегистрировать, ошибка: " + response.getStatusCode();
-            log.error(errorMessage);
-            return errorMessage;
+    private String handleResponse(ResponseEntity<UserResponse> response, CreateUserRequest request) {
+        if (response.getStatusCode() == HttpStatus.NO_CONTENT) {
+            String error = "Cannot register user, status code is: " + response.getStatusCode();
+            log.error(error);
+            return error;
         }
-        String successMessage = "Пользователь зарегистрирован с Айди: " + request.userId();
-        log.info(successMessage);
-        return successMessage;
+        String success = String.format("User with %s is successfully registered!", request.userId());
+        log.info(success);
+        return success;
     }
 
     private String handleHttpStatusCodeException(HttpStatusCodeException e) {
-        String errorMessage = "Ну удалось зарегистрировать: " + e.getResponseBodyAsString();
-        log.error(errorMessage);
-        return errorMessage;
+        String error = "Cannot register: " + e.getResponseBodyAsString();
+        log.error(error);
+        return error;
     }
 
     private String handleGeneralException(Exception e) {
-        String errorMessage = "Произошел серьезный сбой: " + e.getMessage();
-        log.error(errorMessage, e);
-        return errorMessage;
+        String error = "Something serious is happened: " + e.getMessage();
+        log.error(error, e);
+        return error;
     }
 }
 

@@ -67,6 +67,11 @@ public class Commandeer {
             messageMap.put(value.getBotCommand(), value);
         }
 
+        // Логирование для проверки зарегистрированных команд
+        messageMap.forEach((key, value) -> {
+            System.out.println("Registered command: " + key + ", Bean: " + value.getClass().getSimpleName());
+        });
+
         return messageMap;
     }
 }

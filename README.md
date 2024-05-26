@@ -122,13 +122,14 @@ deactivate Telegram
 * Если у вас еще нет докера, нужно его скачать:  
   [ссылка на докер](https://docs.docker.com/get-docker/)
 * Создать в докере image (посмотреть docker -> images в системе)  
-  `docker build -t middle-service .`
+  `docker build -t telegram-bot .`  
+  <span title="если вы видите ошибку типа `ERROR [build 5/5] RUN ./gradlew build --no-daemon --stacktrace --info`, вам нужно будет запустить `gradle wrapper` и когда она пройдет - перезапустить сборку">возможная ошибка сборки</span>  
 * Запустить приложение:
     + В фоновом режиме:  
       `docker run --name telegram-bot -d -e BOT_TOKEN="здесь ваш токен" telegram-bot`  
       _чтобы выйти в этом случае - набрать в терминале: `docker stop telegram-bot`_
     + С отображением результатов работы программы, включая логи и возможные ошибки:
-      `docker run --name telegram-bot -it -e bot.token="здесь ваш токен" telegram-bote`  
+      `docker run --name telegram-bot -it -e bot.token="здесь ваш токен" telegram-bot`  
       <span title="_ctrl+c, чтобы выйти из приложения в данном случае_">выход из приложения</span>
       <span title="_Если вы видите ошибку типа `docker: Error response from daemon: Conflict. The container name "/имя контейнера" is already in use by container "длинное имя". You have to remove (or rename) that container to be able to reuse that name.`,  
       вам потребуется остановить это контейнер перед тем как запускать программу:  
@@ -155,5 +156,11 @@ deactivate Telegram
   
 <br>
 
-!!!!! // Доделать ./gradlew build -x test в экшнс (смотри миддл) 
+//Todo:
+//!!!!! // Доделать ./gradlew build -x test в экшнс (смотри миддл) 
+//все тесты по запуску индивидуально (пока только зеленой кнопочкой вышло)
+//апдейт ридми 
+//чертов шрифт - иероглифы снова, малочитабельные логи
+//тесты
+//компоуз
 
