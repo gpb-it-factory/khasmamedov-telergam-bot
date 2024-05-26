@@ -50,85 +50,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
-  /users/{id}/accounts:
-    post:
-      summary: Открыть новый счёт для пользователя
-      tags: [accounts]
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: integer
-            format: int64
-            example: 356789
-          description: Идентификатор пользователя в Telegram
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateAccountRequest'
-      responses:
-        '204':
-          description: Счёт создан
-        default:
-          description: Непредвиденная ошибка
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-    get:
-      summary: Получить счета пользователя
-      tags: [accounts]
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: integer
-            format: int64
-            example: 356789
-          description: Идентификатор пользователя в Telegram
-      responses:
-        '200':
-          description: Список счетов пользователя
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AccountsListResponse'
-        default:
-          description: Непредвиденная ошибка
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-  /transfers:
-    post:
-      summary: Создать перевод со счёта пользователя на счёт другого пользователя
-      tags: [transfers]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateTransferRequest'
-      responses:
-        '200':
-          description: Перевод совершён
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TransferResponse'
-        default:
-          description: Непредвиденная ошибка
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
 components:
   schemas:
     CreateUserRequest:
@@ -149,54 +70,6 @@ components:
           type: string
           format: uuid
           example: 2d7b7a7a-680e-422e-9cc3-23c68e2ff398
-    CreateAccountRequest:
-      type: object
-      description: Запрос на создание нового счёта
-      properties:
-        accountName:
-          type: string
-          example: 'My first awesome account'
-    AccountsListResponse:
-      type: array
-      description: Список счетов пользователя
-      items:
-        type: object
-        properties:
-          accountId:
-            type: string
-            format: uuid
-            example: 52d2ef91-0b62-4d43-bb56-e7ec542ba8f8
-          accountName: 
-            type: string
-            example: 'Деньги на шашлык'
-          amount:
-            type: string
-            format: number
-            example: '203605.20'
-    CreateTransferRequest:
-      type: object
-      description: Запрос на перевод со счёта пользователя на другой
-      properties:
-        from:
-          type: integer
-          format: int64
-          example: 348741706
-        to:
-          type: integer
-          format: int64
-          example: 332123211
-        amount:
-          type: string
-          format: number
-          example: '203605.20'
-    TransferResponse:
-      type: object
-      description: Информация о переводе
-      properties:
-        transfer_id:
-          type: string
-          format: uuid
-          example: 52d2ef91-0b62-4d43-bb56-e7ec542ba8f8
     Error:
       type: object
       description: Формат непредвиденной ошибки
@@ -217,7 +90,3 @@ components:
 tags:
   - name: users
     description: Операции с пользователями
-  - name: accounts
-    description: Операции со счетами пользователей
-  - name: transfers
-    description: Операции, связанные с переводами между счетами

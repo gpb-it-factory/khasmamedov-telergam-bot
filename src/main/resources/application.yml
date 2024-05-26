@@ -1,3 +1,6 @@
 bot:
   name: SomeBankBot
   token: ${BOT_TOKEN}
+
+khasmamedov-middle-service:
+  url: http://localhost:8081/api

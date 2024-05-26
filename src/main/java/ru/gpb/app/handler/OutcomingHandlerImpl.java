@@ -21,7 +21,7 @@ public class OutcomingHandlerImpl implements OutcomingHandler {
     @Override
     public SendMessage outputtingMessageSender(Message message) {
         String response = messageMap.containsKey(message.getText()) ?
-                messageMap.get(message.getText()).executeTextCommand() : "where is no place like home";
+                messageMap.get(message.getText()).executeCommand(message) : "where is no place like home";
         return SendMessage.builder()
                 .chatId(message.getChatId().toString())
                 .text(response)

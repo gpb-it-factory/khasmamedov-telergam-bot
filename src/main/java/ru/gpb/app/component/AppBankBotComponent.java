@@ -36,7 +36,7 @@ public class AppBankBotComponent extends TelegramLongPollingBot {
         if (update.hasMessage() && update.getMessage().hasText()) {
             try {
                 SendMessage message = outcomingHandler.outputtingMessageSender(update.getMessage());
-                execute(outcomingHandler.outputtingMessageSender(update.getMessage()));
+                execute(message);
                 log.info("'{}' сообщение только что отправлено в чат '{}'", message.getText(), message.getChatId());
             } catch (TelegramApiException e) {
                 log.error("Ошибка при отправке сообщения бота", e);
