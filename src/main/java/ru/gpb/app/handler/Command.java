@@ -8,6 +8,7 @@ public interface Command {
     /**
      * Acts like marker interface (if false = no need to interact with other services - middle in particular;
      * this way in can return say, text)
+     *
      * @return value (marker)
      */
     boolean needsServiceInteraction();

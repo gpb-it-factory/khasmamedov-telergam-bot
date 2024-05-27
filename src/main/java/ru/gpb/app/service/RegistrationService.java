@@ -1,7 +1,7 @@
 package ru.gpb.app.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -14,18 +14,16 @@ import ru.gpb.app.dto.CreateUserRequest;
 public class RegistrationService {
 
     private final RestTemplate restTemplate;
-    private final String middleUrl;
 
-    public RegistrationService(RestTemplate restTemplate, @Value("${khasmamedov-middle-service.url}") String middleUrl) {
+    @Autowired
+    public RegistrationService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
-        this.middleUrl = middleUrl;
     }
 
     public String register(CreateUserRequest request) {
-        String url = middleUrl + "/users";
         try {
-            log.info("Регистрирую пользователя по ЮзерАйди: {}", request.userId());
-            ResponseEntity<Void> response = restTemplate.postForEntity(url, request, Void.class);
+            log.info("Registry used by userID: {}", request.userId());
+            ResponseEntity<Void> response = restTemplate.postForEntity("/users", request, Void.class);
             return handleResponse(response);
         } catch (HttpStatusCodeException e) {
             return handleHttpStatusCodeException(e);
@@ -35,27 +33,27 @@ public class RegistrationService {
     }
 
     private String handleResponse(ResponseEntity<Void> response) {
-        if (response.getStatusCode() == HttpStatus.NO_CONTENT) {
-            String success = "Пользователь создан";
-            log.info(success);
-            return success;
+        HttpStatus statusCode = response.getStatusCode();
+        if (statusCode == HttpStatus.NO_CONTENT) {
+            log.info("User is created");
+            return "Пользователь создан";
         } else {
-            String error = "Не могу зарегистрировать пользователя, статус: " + response.getStatusCode();
+            String error = "Cannot create user, status: " + statusCode;
             log.error(error);
-            return error;
+            return "Непредвиденная ошибка: " + statusCode;
         }
     }
 
     private String handleHttpStatusCodeException(HttpStatusCodeException e) {
-        String error = "Не могу зарегистрировать, ошибка: " + e.getResponseBodyAsString();
-        log.error(error);
-        return error;
+        String responseErrorString = e.getResponseBodyAsString();
+        log.error("Cannot register, HttpStatusCodeException: " + responseErrorString);
+        return "Не могу зарегистрировать, ошибка: " + responseErrorString;
     }
 
     private String handleGeneralException(Exception e) {
-        String error = "Серьезная ошибка произошла: " + e.getMessage();
-        log.error(error, e);
-        return error;
+        String generalErrorMessage = e.getMessage();
+        log.error("Serious exception is happened: " + generalErrorMessage, e);
+        return "Произошла серьезная ошибка: " + generalErrorMessage;
     }
 }
 
