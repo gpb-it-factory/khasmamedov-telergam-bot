@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import ru.gpb.app.dto.CreateUserRequest;
-import ru.gpb.app.dto.UserResponse;
 
 @Service
 @Slf4j
@@ -25,9 +24,9 @@ public class RegistrationService {
     public String register(CreateUserRequest request) {
         String url = middleUrl + "/users";
         try {
-            log.info("Registering user with id: {}", request.userId());
-            ResponseEntity<UserResponse> response = restTemplate.postForEntity(url, request, UserResponse.class);
-            return handleResponse(response, request);
+            log.info("Регистрирую пользователя по ЮзерАйди: {}", request.userId());
+            ResponseEntity<Void> response = restTemplate.postForEntity(url, request, Void.class);
+            return handleResponse(response);
         } catch (HttpStatusCodeException e) {
             return handleHttpStatusCodeException(e);
         } catch (Exception e) {
@@ -35,25 +34,26 @@ public class RegistrationService {
         }
     }
 
-    private String handleResponse(ResponseEntity<UserResponse> response, CreateUserRequest request) {
+    private String handleResponse(ResponseEntity<Void> response) {
         if (response.getStatusCode() == HttpStatus.NO_CONTENT) {
-            String error = "Cannot register user, status code is: " + response.getStatusCode();
+            String success = "Пользователь создан";
+            log.info(success);
+            return success;
+        } else {
+            String error = "Не могу зарегистрировать пользователя, статус: " + response.getStatusCode();
             log.error(error);
             return error;
         }
-        String success = String.format("User with %s is successfully registered!", request.userId());
-        log.info(success);
-        return success;
     }
 
     private String handleHttpStatusCodeException(HttpStatusCodeException e) {
-        String error = "Cannot register: " + e.getResponseBodyAsString();
+        String error = "Не могу зарегистрировать, ошибка: " + e.getResponseBodyAsString();
         log.error(error);
         return error;
     }
 
     private String handleGeneralException(Exception e) {
-        String error = "Something serious is happened: " + e.getMessage();
+        String error = "Серьезная ошибка произошла: " + e.getMessage();
         log.error(error, e);
         return error;
     }

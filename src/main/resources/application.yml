@@ -4,3 +4,14 @@ bot:
 
 khasmamedov-middle-service:
   url: http://localhost:8081/api
+
+server:
+  servlet:
+    encoding:
+      enabled: true
+      charset: UTF-8
+      force: true
+
+spring:
+  messages:
+    encoding: UTF-8
