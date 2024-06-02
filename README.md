@@ -157,3 +157,7 @@ deactivate Telegram
 
 !!!!! // Доделать ./gradlew build -x test в экшнс (смотри миддл) 
 
+//todo, low-mid priority
+//Вероятно,     public Map<String, Command> commandMsg() { с     public Map<String, Command> commandMsg() { 
+//и нафиг не нужно
+
