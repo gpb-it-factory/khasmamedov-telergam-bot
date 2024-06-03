@@ -9,6 +9,8 @@ import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import ru.gpb.app.dto.CreateUserRequest;
 
+import java.nio.charset.StandardCharsets;
+
 @Service
 @Slf4j
 public class RegistrationService {
@@ -45,7 +47,8 @@ public class RegistrationService {
     }
 
     private String handleHttpStatusCodeException(HttpStatusCodeException e) {
-        String responseErrorString = e.getResponseBodyAsString();
+        //String responseErrorString = e.getResponseBodyAsString();
+        String responseErrorString = new String(e.getResponseBodyAsByteArray(), StandardCharsets.UTF_8);
         log.error("Cannot register, HttpStatusCodeException: " + responseErrorString);
         return "Не могу зарегистрировать, ошибка: " + responseErrorString;
     }
@@ -56,4 +59,3 @@ public class RegistrationService {
         return "Произошла серьезная ошибка: " + generalErrorMessage;
     }
 }
-
