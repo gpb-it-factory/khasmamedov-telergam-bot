@@ -53,7 +53,7 @@ jar {
 	}
 }
 
-tasks.withType(JavaCompile).configureEach {
+tasks.withType(JavaCompile) {
 	options.encoding = 'UTF-8'
 }
 
