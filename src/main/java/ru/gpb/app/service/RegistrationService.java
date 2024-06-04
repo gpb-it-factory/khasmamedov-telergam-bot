@@ -39,15 +39,12 @@ public class RegistrationService {
         if (statusCode == HttpStatus.NO_CONTENT) {
             log.info("User is created");
             return "Пользователь создан";
-        } else {
-            String error = "Cannot create user, status: " + statusCode;
-            log.error(error);
-            return "Непредвиденная ошибка: " + statusCode;
         }
+        log.error("Cannot create user, status: " + statusCode);
+        return "Непредвиденная ошибка: " + statusCode;
     }
 
     private String handleHttpStatusCodeException(HttpStatusCodeException e) {
-        //String responseErrorString = e.getResponseBodyAsString();
         String responseErrorString = new String(e.getResponseBodyAsByteArray(), StandardCharsets.UTF_8);
         log.error("Cannot register, HttpStatusCodeException: " + responseErrorString);
         return "Не могу зарегистрировать, ошибка: " + responseErrorString;
