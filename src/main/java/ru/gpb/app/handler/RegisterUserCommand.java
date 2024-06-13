@@ -26,8 +26,8 @@ public class RegisterUserCommand implements Command {
 
     @Override
     public String executeCommand(Message message) {
-        CreateUserRequest request = new CreateUserRequest(message.getChatId(), message.getFrom().getUserName());
-        return registrationService.registerUser(request);
+        CreateUserRequest request = new CreateUserRequest(message.getChatId());
+        return registrationService.register(request);
     }
 }
 
