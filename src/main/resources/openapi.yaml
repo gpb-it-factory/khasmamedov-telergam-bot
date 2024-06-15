@@ -2,7 +2,6 @@ openapi: 3.1.0
 info:
   title: GPB IT Factory Mini-Bank (backend)
   version: 2.0.0
-
 paths:
   /users:
     post:
@@ -25,7 +24,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-
   /v2/users:
     post:
       operationId: createUserV2
@@ -40,13 +38,18 @@ paths:
       responses:
         '204':
           description: Пользователь создан
+        '409':
+          description: Пользователь уже зарегистрирован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorV2'
         default:
           description: Непредвиденная ошибка
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorV2'
-
   /users/{id}:
     get:
       operationId: getUserByTelegramId
@@ -75,7 +78,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-
   /v2/users/{id}:
     get:
       operationId: getUserByTelegramIdV2
@@ -103,8 +105,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorV2'
-
-  /users/{tg-username}:
+  /v2/users/{tg-username}:
     get:
       operationId: getUserByTelegramUsernameV2
       summary: Получить пользователя по username в Telegram
@@ -130,7 +131,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorV2'
-
   /users/{id}/accounts:
     post:
       operationId: createUserAccount
@@ -188,7 +188,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-
   /v2/users/{id}/accounts:
     post:
       operationId: createUserAccountV2
@@ -212,6 +211,12 @@ paths:
       responses:
         '204':
           description: Счёт создан
+        '409':
+          description: Такой счет у данного пользователя уже есть
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorV2'
         default:
           description: Непредвиденная ошибка
           content:
@@ -244,7 +249,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorV2'
-
   /transfers:
     post:
       operationId: createTransfer
@@ -270,7 +274,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-
   /v2/transfers:
     post:
       operationId: createTransferV2
@@ -295,7 +298,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorV2'
-
 components:
   schemas:
     CreateUserRequest:
