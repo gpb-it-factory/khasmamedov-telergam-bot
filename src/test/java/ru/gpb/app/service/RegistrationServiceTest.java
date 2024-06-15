@@ -24,13 +24,10 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class RegistrationServiceTest {
-
     @Mock
     private RestTemplate restTemplate;
-
     @InjectMocks
     private RegistrationService service;
-
     private CreateUserRequest properRequestId;
     private CreateUserRequest improperRequestId;
     private CreateUserRequest wrongRequestId;
@@ -48,7 +45,6 @@ class RegistrationServiceTest {
                 .thenReturn(new ResponseEntity<>(HttpStatus.NO_CONTENT));
 
         String result = service.register(properRequestId);
-
         assertThat("Пользователь создан").isEqualTo(result);
         verify(restTemplate, times(1))
                 .postForEntity("/users", properRequestId, Void.class);
@@ -89,7 +85,6 @@ class RegistrationServiceTest {
                 "500",
                 UUID.randomUUID()
         );
-
         String jsonError = convertErrorToJson(userCreationError);
         HttpStatusCodeException httpStatusCodeException =
                 new HttpServerErrorException(
@@ -99,12 +94,9 @@ class RegistrationServiceTest {
                         jsonError.getBytes(StandardCharsets.UTF_8),
                         StandardCharsets.UTF_8
                 );
-
         when(restTemplate.postForEntity("/users", wrongRequestId, Void.class))
                 .thenThrow(httpStatusCodeException);
-
         String result = service.register(wrongRequestId);
-
         assertThat("Не могу зарегистрировать, ошибка: " + jsonError).isEqualTo(result);
         verify(restTemplate, times(1))
                 .postForEntity("/users", wrongRequestId, Void.class);
@@ -118,17 +110,12 @@ class RegistrationServiceTest {
                 "123",
                 UUID.randomUUID()
         );
-
         String jsonError = convertErrorToJson(userCreationError);
-
         RuntimeException generalException =
                 new RuntimeException(jsonError);
-
         when(restTemplate.postForEntity("/users", wrongRequestId, Void.class))
                 .thenThrow(generalException);
-
         String result = service.register(wrongRequestId);
-
         assertThat("Произошла серьезная ошибка: " + jsonError).isEqualTo(result);
         verify(restTemplate, times(1))
                 .postForEntity("/users", wrongRequestId, Void.class);
