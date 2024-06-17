@@ -6,11 +6,11 @@ import ru.gpb.app.dto.CreateUserRequest;
 import ru.gpb.app.service.RegistrationService;
 
 @Component
-public class RegisterCommand implements Command {
+public class RegisterUserCommand implements Command {
 
     private final RegistrationService registrationService;
 
-    public RegisterCommand(RegistrationService registrationService) {
+    public RegisterUserCommand(RegistrationService registrationService) {
         this.registrationService = registrationService;
     }
 
@@ -27,7 +27,7 @@ public class RegisterCommand implements Command {
     @Override
     public String executeCommand(Message message) {
         CreateUserRequest request = new CreateUserRequest(message.getChatId(), message.getFrom().getUserName());
-        return registrationService.register(request);
+        return registrationService.registerUser(request);
     }
 }
 
