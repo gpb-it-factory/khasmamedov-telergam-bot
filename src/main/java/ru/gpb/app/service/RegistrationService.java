@@ -66,4 +66,5 @@ public class RegistrationService {
         log.error("Serious exception is happened: " + generalErrorMessage, e);
         return "Произошла серьезная ошибка: " + generalErrorMessage;
     }
+
 }
