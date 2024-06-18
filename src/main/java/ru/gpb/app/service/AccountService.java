@@ -12,6 +12,7 @@ import ru.gpb.app.dto.CreateAccountRequest;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -30,15 +31,15 @@ public class AccountService {
             log.info("Creating account for userID: {} with accountName: {}", userId, request.accountName());
             String url = String.format("/users/%d/accounts", userId);
             ResponseEntity<Void> response = restTemplate.postForEntity(url, request, Void.class);
-            return handleResponse(response);
+            return handleAccountRegistryResponse(response);
         } catch (HttpStatusCodeException e) {
-            return handleHttpStatusCodeException(e);
+            return handleAccountRegistryHttpStatusCodeException(e);
         } catch (Exception e) {
-            return handleGeneralException(e);
+            return handleAccountRegistryGeneralException(e);
         }
     }
 
-    public String handleResponse(ResponseEntity<Void> response) {
+    public String handleAccountRegistryResponse(ResponseEntity<Void> response) {
         HttpStatus statusCode = response.getStatusCode();
         if (statusCode == HttpStatus.NO_CONTENT) {
             log.info("Account is created");
@@ -52,29 +53,57 @@ public class AccountService {
         }
     }
 
-    public String handleHttpStatusCodeException(HttpStatusCodeException e) {
+    public String handleAccountRegistryHttpStatusCodeException(HttpStatusCodeException e) {
         String responseErrorString = new String(e.getResponseBodyAsByteArray(), StandardCharsets.UTF_8);
         log.error("Cannot register account, HttpStatusCodeException: " + responseErrorString);
         return "Не могу зарегистрировать счет, ошибка: " + responseErrorString;
     }
 
-    public String handleGeneralException(Exception e) {
+    public String handleAccountRegistryGeneralException(Exception e) {
         String generalErrorMessage = e.getMessage();
         log.error("Serious exception is happened: " + generalErrorMessage, e);
         return "Произошла серьезная ошибка во время создания счета: " + generalErrorMessage;
     }
 
-    public /*ResponseEntity<AccountListResponse[]>*/ String getAccount(Long chatId) {
+    public String getAccount(Long chatId) {
         log.info("Getting account details from userID: {}", chatId);
-        ResponseEntity<AccountListResponse[]> accounts = restTemplate.getForEntity(
-                "/users/chatId/accounts",
-                AccountListResponse[].class
-        );
-        return "Список счетов пользователя: " + Arrays.asList(accounts.getBody());
-        // подумать над:
-        // 1. Список счетов пользователя внезапн может быть пуст
-        // (т.е. пользователь зарегистрировался, но аккаунт еще не создал (или не захотел) - опшионал ?
-        // 2. А если он пуст, я возвращаю просто что - пустой массив ?
-        // 3. Плюс, ввести обработку ошибок.
+        try {
+            ResponseEntity<AccountListResponse[]> accounts = restTemplate.getForEntity(
+                    "/users/chatId/accounts",
+                    AccountListResponse[].class
+            );
+            return handleGetAccountResponse(Optional.of(accounts));
+        } catch (HttpStatusCodeException e) {
+            return handleGetAccountHttpStatusCodeException(e);
+        } catch (Exception e) {
+            return handleGetAccountGeneralException(e);
+        }
+    }
+
+    public String handleGetAccountResponse(Optional<ResponseEntity<AccountListResponse[]>> response) {
+        if (response.isPresent() && response.get().getBody() != null) {
+            AccountListResponse[] responses = response.get().getBody();
+            if (responses.length == 0) {
+                log.warn("No accounts found for user");
+                return "Нет счетов у пользователя";
+            }
+            log.info("Users accounts found: {}", Arrays.asList(responses));
+            return "Список счетов пользователя: " + Arrays.asList(responses);
+        } else {
+            log.error("Cannot retreive account details (empty response or no accounts were found)");
+            return "Не могу получить счета (пустой ответ // не найдено счетов)";
+        }
+    }
+
+    public String handleGetAccountHttpStatusCodeException(HttpStatusCodeException e) {
+        String responseErrorString = new String(e.getResponseBodyAsByteArray(), StandardCharsets.UTF_8);
+        log.error("Cannot get accounts, HttpStatusCodeException: " + responseErrorString);
+        return "Не могу получить счета, ошибка: " + responseErrorString;
+    }
+
+    public String handleGetAccountGeneralException(Exception e) {
+        String generalErrorMessage = e.getMessage();
+        log.error("Serious exception is happened: " + generalErrorMessage, e);
+        return "Произошла серьезная ошибка во время получения счетов: " + generalErrorMessage;
     }
 }
