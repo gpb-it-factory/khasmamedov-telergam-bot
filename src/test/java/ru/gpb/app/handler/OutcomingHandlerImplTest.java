@@ -56,7 +56,7 @@ class OutcomingHandlerImplTest {
     }
 
     @Test
-    public void outputtingMessageSenderHasCommand() {
+    public void outputtingMessageSenderHadCommand() {
         when(mockedMessage.getText()).thenReturn("ALL_GOOD");
         when(mockedMessage.getChatId()).thenReturn(123L);
 
@@ -74,7 +74,7 @@ class OutcomingHandlerImplTest {
     }
 
     @Test
-    public void outputtingMessageSenderHasNoCommand() {
+    public void outputtingMessageSenderHadNoCommand() {
         when(mockedMessage.getText()).thenReturn("NO_COMMAND");
         when(mockedMessage.getChatId()).thenReturn(123L);
 

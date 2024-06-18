@@ -16,19 +16,19 @@ class HelpCommandTest {
     private HelpCommand command;
 
     @Test
-    void getBotCommand() {
+    void getBotCommandSucceed() {
         String result = command.getBotCommand();
         assertThat("/help").isEqualTo(result);
     }
 
     @Test
-    void needsServiceInteraction() {
+    void serviceInteractionServiceReturnedTrue() {
         boolean result = command.needsServiceInteraction();
         assertThat(result).isFalse();
     }
 
     @Test
-    void executeCommand() {
+    void executeCommandWorkedFine() {
         Message message = mock(Message.class);
 
         String result = command.executeCommand(message);
