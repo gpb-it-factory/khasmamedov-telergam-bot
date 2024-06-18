@@ -22,12 +22,6 @@ public class RegistrationService {
         this.restTemplate = restTemplate;
     }
 
-    /**
-     * Despite the fact controller of  B service returns general error, i decided to put here one more specific
-     * exception handler - see handleHttpStatusCodeException
-     * @param request of CreateUserRequest type
-     * @return readable by user String (i include specifics only in logs and omit them in returned value)
-     */
     public String register(CreateUserRequest request) {
         try {
             log.info("Registry used by userID: {} and userName: {}", request.userId(), request.userName());
