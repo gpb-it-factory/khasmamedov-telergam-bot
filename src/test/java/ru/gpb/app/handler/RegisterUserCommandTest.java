@@ -44,7 +44,7 @@ class RegisterUserCommandTest {
         when(mockedMessage.getFrom()).thenReturn(mockedUser);
         when(mockedUser.getUserName()).thenReturn("Khasmamedov");
 
-        CreateUserRequest request = new CreateUserRequest(mockedMessage.getChatId());
+        CreateUserRequest request = new CreateUserRequest(mockedMessage.getChatId(), "Khasmamedov");
         when(registrationService.register(request)).thenReturn("Success");
 
         String result = command.executeCommand(mockedMessage);
