@@ -7,9 +7,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
+import ru.gpb.app.dto.AccountListResponse;
 import ru.gpb.app.dto.CreateAccountRequest;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 @Service
 @Slf4j
@@ -60,5 +62,19 @@ public class AccountService {
         String generalErrorMessage = e.getMessage();
         log.error("Serious exception is happened: " + generalErrorMessage, e);
         return "Произошла серьезная ошибка во время создания счета: " + generalErrorMessage;
+    }
+
+    public /*ResponseEntity<AccountListResponse[]>*/ String getAccount(Long chatId) {
+        log.info("Getting account details from userID: {}", chatId);
+        ResponseEntity<AccountListResponse[]> accounts = restTemplate.getForEntity(
+                "/users/chatId/accounts",
+                AccountListResponse[].class
+        );
+        return "Список счетов пользователя: " + Arrays.asList(accounts.getBody());
+        // подумать над:
+        // 1. Список счетов пользователя внезапн может быть пуст
+        // (т.е. пользователь зарегистрировался, но аккаунт еще не создал (или не захотел) - опшионал ?
+        // 2. А если он пуст, я возвращаю просто что - пустой массив ?
+        // 3. Плюс, ввести обработку ошибок.
     }
 }
