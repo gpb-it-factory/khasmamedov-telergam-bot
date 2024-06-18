@@ -13,10 +13,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
+import ru.gpb.app.dto.AccountListResponse;
 import ru.gpb.app.dto.CreateAccountRequest;
 import ru.gpb.app.dto.Error;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,10 +32,9 @@ class AccountServiceTest {
     private AccountService service;
     private CreateAccountRequest accountRequest;
 
-    /**
-     * Specifically avoided here extras like properId, improperId, wrongId since it all can be actually tested with
-     * same data
-     */
+    private String gettingAccUrl;
+
+    private Long userId;
 
     @BeforeEach
     public void setUp() {
@@ -42,10 +43,12 @@ class AccountServiceTest {
                 "Khasmamedov",
                 "My first awesome account"
         );
+        userId = 868047670L;
+        gettingAccUrl = String.format("/users/%d/accounts", userId);
     }
 
     @Test
-    public void registerAccountIsSuccessful() {
+    public void registerAccountWasOK() {
         String url = String.format("/users/%d/accounts", accountRequest.userId());
         when(restTemplate.postForEntity(url, accountRequest, Void.class))
                 .thenReturn(new ResponseEntity<>(HttpStatus.NO_CONTENT));
@@ -57,7 +60,29 @@ class AccountServiceTest {
     }
 
     @Test
-    public void registerAccountIsAlreadyDoneBefore() {
+    public void gettingAccountsWasOK() {
+        AccountListResponse[] accounts = new AccountListResponse[]{
+                new AccountListResponse(
+                        UUID.randomUUID(),
+                        "Деньги на шашлык",
+                        "203605.20"
+                )
+        };
+        ResponseEntity<AccountListResponse[]> responseEntity = new ResponseEntity<>(accounts, HttpStatus.OK);
+        when(restTemplate.getForEntity(gettingAccUrl, AccountListResponse[].class))
+                .thenReturn(responseEntity);
+
+        String result = service.getAccount(userId);
+
+        String expected = "Список счетов пользователя: " + Arrays.asList(accounts);
+
+        assertThat(expected).isEqualTo(result);
+        verify(restTemplate, times(1))
+                .getForEntity(gettingAccUrl, AccountListResponse[].class);
+    }
+
+    @Test
+    public void registerAccountWasAlreadyDoneBefore() {
         String url = String.format("/users/%d/accounts", accountRequest.userId());
         when(restTemplate.postForEntity(url, accountRequest, Void.class))
                 .thenReturn(new ResponseEntity<>(HttpStatus.CONFLICT));
@@ -70,7 +95,19 @@ class AccountServiceTest {
     }
 
     @Test
-    public void registerAccountProcessCannotBeDone() {
+    public void gettingAccountsReturnedNoData() {
+        AccountListResponse[] accounts = {};
+        ResponseEntity<AccountListResponse[]> responseEntity = new ResponseEntity<>(accounts, HttpStatus.OK);
+        when(restTemplate.getForEntity(gettingAccUrl, AccountListResponse[].class))
+                .thenReturn(responseEntity);
+
+        String result = service.getAccount(userId);
+
+        assertThat("Нет счетов у пользователя").isEqualTo(result);
+    }
+
+    @Test
+    public void registerAccountProcessCouldNotBeDone() {
         @SuppressWarnings("unchecked")
         ResponseEntity<Void> response = mock(ResponseEntity.class);
         when(response.getStatusCode()).thenReturn(HttpStatus.BAD_REQUEST);
@@ -83,6 +120,17 @@ class AccountServiceTest {
         assertThat("Ошибка при создании счета: " + response.getStatusCode()).isEqualTo(result);
         verify(restTemplate, times(1))
                 .postForEntity(url, accountRequest, Void.class);
+    }
+
+    @Test
+    public void gettingAccountProcessCouldNotBeDone() {
+        ResponseEntity<AccountListResponse[]> responseEntity = new ResponseEntity<>(null, HttpStatus.OK);
+        when(restTemplate.getForEntity(gettingAccUrl, AccountListResponse[].class))
+                .thenReturn(responseEntity);
+
+        String result = service.getAccount(userId);
+
+        assertThat("Не могу получить счета (пустой ответ // не найдено счетов)").isEqualTo(result);
     }
 
     @Test
@@ -114,6 +162,32 @@ class AccountServiceTest {
     }
 
     @Test
+    void getAccountHandledHttpStatusCodeException() {
+        Error accountCreationError = new Error(
+                "Ошибка получения счета",
+                "AccountGettingError",
+                "500",
+                UUID.randomUUID()
+        );
+        String jsonError = convertErrorToJson(accountCreationError);
+        HttpStatusCodeException httpStatusCodeException =
+                new HttpServerErrorException(
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        "Internal Server Error",
+                        null,
+                        jsonError.getBytes(StandardCharsets.UTF_8),
+                        StandardCharsets.UTF_8
+                );
+
+        when(restTemplate.getForEntity(gettingAccUrl, AccountListResponse[].class))
+                .thenThrow(httpStatusCodeException);
+
+        String result = service.getAccount(userId);
+
+        assertThat("Не могу получить счета, ошибка: " + jsonError).isEqualTo(result);
+    }
+
+    @Test
     public void registerAccountInvokedGeneralException() {
         Error accountCreationError = new Error(
                 "Произошло что-то ужасное, но станет лучше, честно",
@@ -133,6 +207,17 @@ class AccountServiceTest {
         assertThat("Произошла серьезная ошибка во время создания счета: " + jsonError).isEqualTo(result);
         verify(restTemplate, times(1))
                 .postForEntity(url, accountRequest, Void.class);
+    }
+
+    @Test
+    void getAccountHandlesGeneralException() {
+        RuntimeException exception = new RuntimeException("Unexpected error");
+        when(restTemplate.getForEntity(gettingAccUrl, AccountListResponse[].class))
+                .thenThrow(exception);
+
+        String result = service.getAccount(userId);
+
+        assertThat("Произошла серьезная ошибка во время получения счетов: Unexpected error").isEqualTo(result);
     }
 
     public static String convertErrorToJson(Error error) {

@@ -39,7 +39,7 @@ public class AccountService {
         }
     }
 
-    public String handleAccountRegistryResponse(ResponseEntity<Void> response) {
+    private String handleAccountRegistryResponse(ResponseEntity<Void> response) {
         HttpStatus statusCode = response.getStatusCode();
         if (statusCode == HttpStatus.NO_CONTENT) {
             log.info("Account is created");
@@ -53,13 +53,13 @@ public class AccountService {
         }
     }
 
-    public String handleAccountRegistryHttpStatusCodeException(HttpStatusCodeException e) {
+    private String handleAccountRegistryHttpStatusCodeException(HttpStatusCodeException e) {
         String responseErrorString = new String(e.getResponseBodyAsByteArray(), StandardCharsets.UTF_8);
         log.error("Cannot register account, HttpStatusCodeException: " + responseErrorString);
         return "Не могу зарегистрировать счет, ошибка: " + responseErrorString;
     }
 
-    public String handleAccountRegistryGeneralException(Exception e) {
+    private String handleAccountRegistryGeneralException(Exception e) {
         String generalErrorMessage = e.getMessage();
         log.error("Serious exception is happened: " + generalErrorMessage, e);
         return "Произошла серьезная ошибка во время создания счета: " + generalErrorMessage;
@@ -68,8 +68,9 @@ public class AccountService {
     public String getAccount(Long chatId) {
         log.info("Getting account details from userID: {}", chatId);
         try {
+            String url = String.format("/users/%d/accounts", chatId);
             ResponseEntity<AccountListResponse[]> accounts = restTemplate.getForEntity(
-                    "/users/chatId/accounts",
+                    url,
                     AccountListResponse[].class
             );
             return handleGetAccountResponse(Optional.of(accounts));
@@ -80,7 +81,7 @@ public class AccountService {
         }
     }
 
-    public String handleGetAccountResponse(Optional<ResponseEntity<AccountListResponse[]>> response) {
+    private String handleGetAccountResponse(Optional<ResponseEntity<AccountListResponse[]>> response) {
         if (response.isPresent() && response.get().getBody() != null) {
             AccountListResponse[] responses = response.get().getBody();
             if (responses.length == 0) {
@@ -95,13 +96,13 @@ public class AccountService {
         }
     }
 
-    public String handleGetAccountHttpStatusCodeException(HttpStatusCodeException e) {
+    private String handleGetAccountHttpStatusCodeException(HttpStatusCodeException e) {
         String responseErrorString = new String(e.getResponseBodyAsByteArray(), StandardCharsets.UTF_8);
         log.error("Cannot get accounts, HttpStatusCodeException: " + responseErrorString);
         return "Не могу получить счета, ошибка: " + responseErrorString;
     }
 
-    public String handleGetAccountGeneralException(Exception e) {
+    private String handleGetAccountGeneralException(Exception e) {
         String generalErrorMessage = e.getMessage();
         log.error("Serious exception is happened: " + generalErrorMessage, e);
         return "Произошла серьезная ошибка во время получения счетов: " + generalErrorMessage;

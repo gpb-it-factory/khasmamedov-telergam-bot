@@ -41,7 +41,7 @@ public class RegistrationService {
         }
     }
 
-    public String handleResponse(ResponseEntity<Void> response) {
+    private String handleResponse(ResponseEntity<Void> response) {
         HttpStatus statusCode = response.getStatusCode();
         if (statusCode == HttpStatus.NO_CONTENT) {
             log.info("User is created");
@@ -55,13 +55,13 @@ public class RegistrationService {
         }
     }
 
-    public String handleHttpStatusCodeException(HttpStatusCodeException e) {
+    private String handleHttpStatusCodeException(HttpStatusCodeException e) {
         String responseErrorString = new String(e.getResponseBodyAsByteArray(), StandardCharsets.UTF_8);
         log.error("Cannot register, HttpStatusCodeException: " + responseErrorString);
         return "Не могу зарегистрировать, ошибка: " + responseErrorString;
     }
 
-    public String handleGeneralException(Exception e) {
+    private String handleGeneralException(Exception e) {
         String generalErrorMessage = e.getMessage();
         log.error("Serious exception is happened: " + generalErrorMessage, e);
         return "Произошла серьезная ошибка: " + generalErrorMessage;

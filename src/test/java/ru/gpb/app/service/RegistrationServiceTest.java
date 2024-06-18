@@ -40,7 +40,7 @@ class RegistrationServiceTest {
     }
 
     @Test
-    public void registerUserIsSuccessful() {
+    public void registerUserWasOK() {
         when(restTemplate.postForEntity("/users", properRequestId, Void.class))
                 .thenReturn(new ResponseEntity<>(HttpStatus.NO_CONTENT));
 
@@ -51,7 +51,7 @@ class RegistrationServiceTest {
     }
 
     @Test
-    public void registerUserIsAlreadyDoneBefore() {
+    public void registerUserWasAlreadyDoneBefore() {
         when(restTemplate.postForEntity("/users", properRequestId, Void.class))
                 .thenReturn(new ResponseEntity<>(HttpStatus.CONFLICT));
 
@@ -63,7 +63,7 @@ class RegistrationServiceTest {
     }
 
     @Test
-    public void registerUserProcessCannotBeDone() {
+    public void registerUserProcessCouldNotBeDone() {
         @SuppressWarnings("unchecked")
         ResponseEntity<Void> response = mock(ResponseEntity.class);
         when(response.getStatusCode()).thenReturn(HttpStatus.BAD_REQUEST);
