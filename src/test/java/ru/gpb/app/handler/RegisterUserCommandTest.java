@@ -127,8 +127,9 @@ class RegisterUserCommandTest {
         when(mockedMessage.getFrom()).thenReturn(mockedUser);
         when(mockedUser.getUserName()).thenReturn("Khasmamedov");
 
+        String expectedResponse = "Произошла серьезная ошибка во время создания счета: Unexpected error";
         CreateUserRequest request = new CreateUserRequest(mockedMessage.getChatId(), "Khasmamedov");
-        when(registrationService.registerUser(request)).thenReturn("Success");
+        when(registrationService.registerUser(request)).thenReturn(expectedResponse);
 
         String result = command.executeCommand(mockedMessage);
 
