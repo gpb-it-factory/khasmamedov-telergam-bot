@@ -15,13 +15,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class RegisterCommandTest {
+class RegisterUserCommandTest {
 
     @Mock
     private RegistrationService registrationService;
 
     @InjectMocks
-    private RegisterCommand command;
+    private RegisterUserCommand command;
 
     @Test
     public void getBotCommandSuccess() {
@@ -45,7 +45,7 @@ class RegisterCommandTest {
         when(mockedUser.getUserName()).thenReturn("Khasmamedov");
 
         CreateUserRequest request = new CreateUserRequest(mockedMessage.getChatId(), "Khasmamedov");
-        when(registrationService.register(request)).thenReturn("Success");
+        when(registrationService.registerUser(request)).thenReturn("Success");
 
         String result = command.executeCommand(mockedMessage);
 
