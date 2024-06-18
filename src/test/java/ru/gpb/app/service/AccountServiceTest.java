@@ -210,7 +210,7 @@ class AccountServiceTest {
     }
 
     @Test
-    void getAccountHandlesGeneralException() {
+    void getAccountHandledGeneralException() {
         RuntimeException exception = new RuntimeException("Unexpected error");
         when(restTemplate.getForEntity(gettingAccUrl, AccountListResponse[].class))
                 .thenThrow(exception);
