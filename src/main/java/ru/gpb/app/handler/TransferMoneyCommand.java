@@ -26,27 +26,33 @@ public class TransferMoneyCommand implements Command {
         return true;
     }
 
-    private boolean areIncomingParamsBad(String[] transferData) {
+    private boolean isCommandGivenProperly(String[] transferData) {
         int dataRealLength = transferData.length;
-        if (dataRealLength != 2) {
+        boolean result = true;
+        if (transferData.length != 2) {
             log.error("Wrong parameters quantity came from Telegram: should be 2, but were: {}", dataRealLength);
+            result = false;
         }
-        return true;
+        return result;
     }
+
     private boolean isMoneyFormatBad(String transferDatum) {
+        boolean result;
         try {
             Double.parseDouble(transferDatum);
+            result = false;
         } catch (NumberFormatException e) {
             log.error("Wrong [amount] format: was {} instead of double: ", transferDatum, e);
+            result = true;
         }
-        return true;
+        return result;
     }
 
     @Override
     public String executeCommand(Message message) {
         String[] transferData = message.getText().substring("/transfer ".length()).split(" ", 2);
 
-        if (areIncomingParamsBad(transferData)) {
+        if (!isCommandGivenProperly(transferData)) {
             return "Ввели неверную команду; \"/transfer [toTelegramUser] [amount]\" - верный ее формат!";
         }
 
