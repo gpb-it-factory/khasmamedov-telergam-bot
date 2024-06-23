@@ -13,33 +13,20 @@ import java.nio.charset.StandardCharsets;
 
 @Service
 @Slf4j
-public class RegistrationService {
+public class UserService {
 
-    private final RestTemplate restTemplate;
+    private final UserClient userClient;
 
-    @Autowired
-    public RegistrationService(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
+    public UserService(UserClient userClient) {
+        this.userClient = userClient;
     }
 
     /**
      * Despite the fact controller of  B service returns general error, i decided to put here one more specific
      * exception handler - see handleHttpStatusCodeException
-     *
-     * @param request of CreateUserRequest type
+     * @param response<Void> of CreateUserRequest type
      * @return readable by user String (i include specifics only in logs and omit them in returned value)
      */
-    public String registerUser(CreateUserRequest request) {
-        try {
-            log.info("Registry used by userID: {} and userName: {}", request.userId(), request.userName());
-            ResponseEntity<Void> response = restTemplate.postForEntity("/users", request, Void.class);
-            return handleResponse(response);
-        } catch (HttpStatusCodeException e) {
-            return handleHttpStatusCodeException(e);
-        } catch (Exception e) {
-            return handleGeneralException(e);
-        }
-    }
 
     private String handleResponse(ResponseEntity<Void> response) {
         HttpStatus statusCode = response.getStatusCode();
@@ -67,4 +54,14 @@ public class RegistrationService {
         return "Произошла серьезная ошибка: " + generalErrorMessage;
     }
 
+    public String register(CreateUserRequest request) {
+        try {
+            log.info("Registry used by userID: {} and userName: {}", request.userId(), request.userName());
+            return handleResponse(userClient.register(request));
+        } catch (HttpStatusCodeException e) {
+            return handleHttpStatusCodeException(e);
+        } catch (Exception e) {
+            return handleGeneralException(e);
+        }
+    }
 }

@@ -22,12 +22,13 @@ import java.util.Arrays;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class AccountServiceTest {
     @Mock
-    private RestTemplate restTemplate;
+    private AccountClient accountClient;
     @InjectMocks
     private AccountService service;
     private CreateAccountRequest accountRequest;
@@ -48,18 +49,17 @@ class AccountServiceTest {
     }
 
     @Test
-    public void registerAccountWasOK() {
-        String url = String.format("/users/%d/accounts", accountRequest.userId());
-        when(restTemplate.postForEntity(url, accountRequest, Void.class))
-                .thenReturn(new ResponseEntity<>(HttpStatus.NO_CONTENT));
+    public void registerAccountWasSuccessful() {
+        when(accountClient.openAccount(accountRequest)).thenReturn(new ResponseEntity<>(HttpStatus.NO_CONTENT));
 
         String result = service.openAccount(accountRequest);
+
         assertThat("Счет создан").isEqualTo(result);
-        verify(restTemplate, times(1))
-                .postForEntity(url, accountRequest, Void.class);
     }
 
     @Test
+    public void registerAccountWasAlreadyDoneBefore() {
+        when(accountClient.openAccount(accountRequest)).thenReturn(new ResponseEntity<>(HttpStatus.CONFLICT));
     public void gettingAccountsWasOK() {
         AccountListResponse[] accounts = new AccountListResponse[]{
                 new AccountListResponse(
@@ -90,11 +90,10 @@ class AccountServiceTest {
         String result = service.openAccount(accountRequest);
 
         assertThat("Такой счет у данного пользователя уже есть: " + HttpStatus.CONFLICT).isEqualTo(result);
-        verify(restTemplate, times(1))
-                .postForEntity(url, accountRequest, Void.class);
     }
 
     @Test
+    public void registerAccountProcessCouldNotBeDone() {
     public void gettingAccountsReturnedNoData() {
         AccountListResponse[] accounts = {};
         ResponseEntity<AccountListResponse[]> responseEntity = new ResponseEntity<>(accounts, HttpStatus.OK);
@@ -111,15 +110,11 @@ class AccountServiceTest {
         @SuppressWarnings("unchecked")
         ResponseEntity<Void> response = mock(ResponseEntity.class);
         when(response.getStatusCode()).thenReturn(HttpStatus.BAD_REQUEST);
-        String url = String.format("/users/%d/accounts", accountRequest.userId());
-        when(restTemplate.postForEntity(url, accountRequest, Void.class))
-                .thenReturn(response);
+        when(accountClient.openAccount(accountRequest)).thenReturn(response);;
 
         String result = service.openAccount(accountRequest);
 
         assertThat("Ошибка при создании счета: " + response.getStatusCode()).isEqualTo(result);
-        verify(restTemplate, times(1))
-                .postForEntity(url, accountRequest, Void.class);
     }
 
     @Test
@@ -150,15 +145,11 @@ class AccountServiceTest {
                         jsonError.getBytes(StandardCharsets.UTF_8),
                         StandardCharsets.UTF_8
                 );
-        String url = String.format("/users/%d/accounts", accountRequest.userId());
-        when(restTemplate.postForEntity(url, accountRequest, Void.class))
-                .thenThrow(httpStatusCodeException);
+        when(accountClient.openAccount(accountRequest)).thenThrow(httpStatusCodeException);;
 
         String result = service.openAccount(accountRequest);
 
         assertThat("Не могу зарегистрировать счет, ошибка: " + jsonError).isEqualTo(result);
-        verify(restTemplate, times(1))
-                .postForEntity(url, accountRequest, Void.class);
     }
 
     @Test
@@ -198,9 +189,8 @@ class AccountServiceTest {
         String jsonError = convertErrorToJson(accountCreationError);
         RuntimeException generalException =
                 new RuntimeException(jsonError);
-        String url = String.format("/users/%d/accounts", accountRequest.userId());
-        when(restTemplate.postForEntity(url, accountRequest, Void.class))
-                .thenThrow(generalException);
+
+        when(accountClient.openAccount(accountRequest)).thenThrow(generalException);;
 
         String result = service.openAccount(accountRequest);
 

@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
-import org.springframework.web.client.RestTemplate;
 import ru.gpb.app.dto.CreateUserRequest;
 import ru.gpb.app.dto.Error;
 
@@ -20,14 +19,18 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class RegistrationServiceTest {
+class UserServiceTest {
+
     @Mock
-    private RestTemplate restTemplate;
+    private UserClient userClient;
+
     @InjectMocks
-    private RegistrationService service;
+    private UserService service;
+
     private CreateUserRequest properRequestId;
     private CreateUserRequest improperRequestId;
     private CreateUserRequest wrongRequestId;
@@ -40,51 +43,48 @@ class RegistrationServiceTest {
     }
 
     @Test
-    public void registerUserWasOK() {
-        when(restTemplate.postForEntity("/users", properRequestId, Void.class))
+    public void registerUserWasSuccessful() {
+        when(userClient.register(properRequestId))
                 .thenReturn(new ResponseEntity<>(HttpStatus.NO_CONTENT));
 
-        String result = service.registerUser(properRequestId);
+        String result = service.register(properRequestId);
+
         assertThat("Пользователь создан").isEqualTo(result);
-        verify(restTemplate, times(1))
-                .postForEntity("/users", properRequestId, Void.class);
     }
 
     @Test
     public void registerUserWasAlreadyDoneBefore() {
-        when(restTemplate.postForEntity("/users", properRequestId, Void.class))
+        when(userClient.register(properRequestId))
                 .thenReturn(new ResponseEntity<>(HttpStatus.CONFLICT));
 
-        String result = service.registerUser(properRequestId);
+        String result = service.register(properRequestId);
 
         assertThat("Пользователь уже зарегистрирован: " + HttpStatus.CONFLICT).isEqualTo(result);
-        verify(restTemplate, times(1))
-                .postForEntity("/users", properRequestId, Void.class);
     }
+
 
     @Test
     public void registerUserProcessCouldNotBeDone() {
         @SuppressWarnings("unchecked")
         ResponseEntity<Void> response = mock(ResponseEntity.class);
         when(response.getStatusCode()).thenReturn(HttpStatus.BAD_REQUEST);
-        when(restTemplate.postForEntity("/users", improperRequestId, Void.class))
+        when(userClient.register(improperRequestId))
                 .thenReturn(response);
 
-        String result = service.registerUser(improperRequestId);
+        String result = service.register(improperRequestId);
 
         assertThat("Ошибка при регистрации пользователя: " + response.getStatusCode()).isEqualTo(result);
-        verify(restTemplate, times(1))
-                .postForEntity("/users", improperRequestId, Void.class);
     }
 
     @Test
-    public void registerUserInvokedInternalServerException() {
+    public void registerResponseInvokedInternalServerException() {
         Error userCreationError = new Error(
                 "Ошибка регистрации пользователя",
                 "UserCreationError",
                 "500",
                 UUID.randomUUID()
         );
+
         String jsonError = convertErrorToJson(userCreationError);
         HttpStatusCodeException httpStatusCodeException =
                 new HttpServerErrorException(
@@ -94,31 +94,35 @@ class RegistrationServiceTest {
                         jsonError.getBytes(StandardCharsets.UTF_8),
                         StandardCharsets.UTF_8
                 );
-        when(restTemplate.postForEntity("/users", wrongRequestId, Void.class))
+
+        when(userClient.register(wrongRequestId))
                 .thenThrow(httpStatusCodeException);
-        String result = service.registerUser(wrongRequestId);
+
+        String result = service.register(wrongRequestId);
+
         assertThat("Не могу зарегистрировать, ошибка: " + jsonError).isEqualTo(result);
-        verify(restTemplate, times(1))
-                .postForEntity("/users", wrongRequestId, Void.class);
     }
 
     @Test
-    public void registerUserInvokedGeneralException() {
+    public void registerResponseInvokedGeneralException() {
         Error userCreationError = new Error(
                 "Произошло что-то ужасное, но станет лучше, честно",
                 "GeneralError",
                 "123",
                 UUID.randomUUID()
         );
+
         String jsonError = convertErrorToJson(userCreationError);
+
         RuntimeException generalException =
                 new RuntimeException(jsonError);
-        when(restTemplate.postForEntity("/users", wrongRequestId, Void.class))
+
+        when(userClient.register(wrongRequestId))
                 .thenThrow(generalException);
-        String result = service.registerUser(wrongRequestId);
+
+        String result = service.register(wrongRequestId);
+
         assertThat("Произошла серьезная ошибка: " + jsonError).isEqualTo(result);
-        verify(restTemplate, times(1))
-                .postForEntity("/users", wrongRequestId, Void.class);
     }
 
     public static String convertErrorToJson(Error error) {
