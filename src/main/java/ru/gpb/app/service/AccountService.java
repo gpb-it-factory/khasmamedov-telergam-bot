@@ -5,9 +5,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
+import ru.gpb.app.dto.AccountListResponse;
 import ru.gpb.app.dto.CreateAccountRequest;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -56,22 +59,6 @@ public class AccountService {
         }
     }
 
-    public String getAccount(Long chatId) {
-        log.info("Getting account details from userID: {}", chatId);
-        try {
-            String url = String.format("/users/%d/accounts", chatId);
-            ResponseEntity<AccountListResponse[]> accounts = restTemplate.getForEntity(
-                    url,
-                    AccountListResponse[].class
-            );
-            return handleGetAccountResponse(Optional.of(accounts));
-        } catch (HttpStatusCodeException e) {
-            return handleGetAccountHttpStatusCodeException(e);
-        } catch (Exception e) {
-            return handleGetAccountGeneralException(e);
-        }
-    }
-
     private String handleGetAccountResponse(Optional<ResponseEntity<AccountListResponse[]>> response) {
         if (response.isPresent() && response.get().getBody() != null) {
             AccountListResponse[] responses = response.get().getBody();
@@ -97,5 +84,16 @@ public class AccountService {
         String generalErrorMessage = e.getMessage();
         log.error("Serious exception is happened: " + generalErrorMessage, e);
         return "Произошла серьезная ошибка во время получения счетов: " + generalErrorMessage;
+    }
+
+    public String getAccount(Long chatId) {
+        log.info("Getting account details from userID: {}", chatId);
+        try {
+            return handleGetAccountResponse(Optional.of(accountClient.getAccount(chatId)));
+        } catch (HttpStatusCodeException e) {
+            return handleGetAccountHttpStatusCodeException(e);
+        } catch (Exception e) {
+            return handleGetAccountGeneralException(e);
+        }
     }
 }
