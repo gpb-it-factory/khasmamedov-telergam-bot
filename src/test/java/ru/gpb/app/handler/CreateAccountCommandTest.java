@@ -53,53 +53,14 @@ class CreateAccountCommandTest {
     }
 
     @Test
-    public void executeCommandRunsFine() {
-        Message mockedMessage = mock(Message.class);
-        when(mockedMessage.getChatId()).thenReturn(123L);
-        when(mockedMessage.getFrom()).thenReturn(user);
-
-
-        Message mockedMessage = mock(Message.class);
-        User mockedUser = mock(User.class);
-
-        when(mockedMessage.getChatId()).thenReturn(123L);
-        when(mockedMessage.getFrom()).thenReturn(mockedUser);
-        when(mockedUser.getUserName()).thenReturn("Khasmamedov");
-
-        CreateAccountRequest request = new CreateAccountRequest(
-                mockedMessage.getChatId(),
-                mockedUser.getUserName(),
-                "My first awesome account"
-        );
-        when(accountService.openAccount(request)).thenReturn("Success");
-
-        String result = command.executeCommand(mockedMessage);
-
-        assertThat("Success").isEqualTo(result);
-    }
-
-    @Test
     public void executeCommandCreatedAccount() {
         Message mockedMessage = mock(Message.class);
-        User mockedUser = mock(User.class);
+        when(mockedMessage.getChatId()).thenReturn(123L);
         when(mockedMessage.getFrom()).thenReturn(user);
 
         CreateAccountRequest request = new CreateAccountRequest(
                 mockedMessage.getChatId(),
-                mockedUser.getUserName(),
                 user.getUserName(),
-                "My first awesome account"
-        );
-
-
-
-        when(mockedMessage.getChatId()).thenReturn(123L);
-        when(mockedMessage.getFrom()).thenReturn(mockedUser);
-        when(mockedUser.getUserName()).thenReturn("Khasmamedov");
-
-        CreateAccountRequest request = new CreateAccountRequest(
-                mockedMessage.getChatId(),
-                mockedUser.getUserName(),
                 "My first awesome account"
         );
         when(accountService.openAccount(request)).thenReturn("Счет создан");
@@ -112,15 +73,12 @@ class CreateAccountCommandTest {
     @Test
     public void executeCommandDidntCreateAccountDueToAccConflict() {
         Message mockedMessage = mock(Message.class);
-        User mockedUser = mock(User.class);
-
         when(mockedMessage.getChatId()).thenReturn(123L);
-        when(mockedMessage.getFrom()).thenReturn(mockedUser);
-        when(mockedUser.getUserName()).thenReturn("Khasmamedov");
+        when(mockedMessage.getFrom()).thenReturn(user);
 
         CreateAccountRequest request = new CreateAccountRequest(
                 mockedMessage.getChatId(),
-                mockedUser.getUserName(),
+                user.getUserName(),
                 "My first awesome account"
         );
         String response = "Такой счет у данного пользователя уже есть: " + "409";
@@ -134,18 +92,16 @@ class CreateAccountCommandTest {
     @Test
     public void executeCommandDidntCreateAccountDueToError() {
         Message mockedMessage = mock(Message.class);
-        User mockedUser = mock(User.class);
-
         when(mockedMessage.getChatId()).thenReturn(123L);
-        when(mockedMessage.getFrom()).thenReturn(mockedUser);
-        when(mockedUser.getUserName()).thenReturn("Khasmamedov");
+        when(mockedMessage.getFrom()).thenReturn(user);
+
         @SuppressWarnings("unchecked")
         ResponseEntity<Void> mockedResponse = mock(ResponseEntity.class);
         when(mockedResponse.getStatusCode()).thenReturn(HttpStatus.BAD_REQUEST);
 
         CreateAccountRequest request = new CreateAccountRequest(
                 mockedMessage.getChatId(),
-                mockedUser.getUserName(),
+                user.getUserName(),
                 "My first awesome account"
         );
 
@@ -160,15 +116,12 @@ class CreateAccountCommandTest {
     @Test
     public void executeCommandReturnedWithHttpStatusCodeException() {
         Message mockedMessage = mock(Message.class);
-        User mockedUser = mock(User.class);
-
         when(mockedMessage.getChatId()).thenReturn(123L);
-        when(mockedMessage.getFrom()).thenReturn(mockedUser);
-        when(mockedUser.getUserName()).thenReturn("Khasmamedov");
+        when(mockedMessage.getFrom()).thenReturn(user);
 
         CreateAccountRequest request = new CreateAccountRequest(
                 mockedMessage.getChatId(),
-                mockedUser.getUserName(),
+                user.getUserName(),
                 "My first awesome account"
         );
 
@@ -190,15 +143,12 @@ class CreateAccountCommandTest {
     @Test
     public void executeCommandGotGeneralException() {
         Message mockedMessage = mock(Message.class);
-        User mockedUser = mock(User.class);
-
         when(mockedMessage.getChatId()).thenReturn(123L);
-        when(mockedMessage.getFrom()).thenReturn(mockedUser);
-        when(mockedUser.getUserName()).thenReturn("Khasmamedov");
+        when(mockedMessage.getFrom()).thenReturn(user);
 
         CreateAccountRequest request = new CreateAccountRequest(
                 mockedMessage.getChatId(),
-                mockedUser.getUserName(),
+                user.getUserName(),
                 "My first awesome account"
         );
 
