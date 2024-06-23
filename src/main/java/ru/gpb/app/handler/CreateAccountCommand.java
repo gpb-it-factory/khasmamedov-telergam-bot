@@ -13,6 +13,7 @@ public class CreateAccountCommand implements Command {
     public CreateAccountCommand(AccountService accountService) {
         this.accountService = accountService;
     }
+
     @Override
     public String getBotCommand() {
         return "/createaccount";

@@ -1,5 +1,6 @@
 package ru.gpb.app.handler;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,36 +24,42 @@ class CreateAccountCommandTest {
     @InjectMocks
     private CreateAccountCommand command;
 
+    private User user;
+
+    @BeforeEach
+    public void setUp() {
+        user = new User();
+        user.setId(123L);
+        user.setUserName("Khasmamedov");
+    }
+
     @Test
-    public void getBotCommandSuccess() {
+    public void getBotCommandSucceed() {
         String result = command.getBotCommand();
         assertThat("/createaccount").isEqualTo(result);
     }
 
     @Test
-    public void serviceInteractionServiceReturnsTrue() {
+    public void serviceInteractionServiceReturnedTrue() {
         boolean result = command.needsServiceInteraction();
         assertThat(result).isTrue();
     }
 
     @Test
-    public void executeCommandRunsFine() {
+    public void executeCommandRunFine() {
         Message mockedMessage = mock(Message.class);
-        User mockedUser = mock(User.class);
-
         when(mockedMessage.getChatId()).thenReturn(123L);
-        when(mockedMessage.getFrom()).thenReturn(mockedUser);
-        when(mockedUser.getUserName()).thenReturn("Khasmamedov");
+        when(mockedMessage.getFrom()).thenReturn(user);
 
         CreateAccountRequest request = new CreateAccountRequest(
                 mockedMessage.getChatId(),
-                mockedUser.getUserName(),
+                user.getUserName(),
                 "My first awesome account"
         );
-        when(accountService.openAccount(request)).thenReturn("Success");
+        when(accountService.openAccount(request)).thenReturn("Счет создан");
 
         String result = command.executeCommand(mockedMessage);
 
-        assertThat("Success").isEqualTo(result);
+        assertThat("Счет создан").isEqualTo(result);
     }
 }
