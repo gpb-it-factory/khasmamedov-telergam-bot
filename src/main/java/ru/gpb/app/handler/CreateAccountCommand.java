@@ -25,7 +25,9 @@ public class CreateAccountCommand implements Command {
     }
 
     @Override
-    public String executeCommand(Message message) {
+    public String executeCommand(Message message, String... params) {
+
+
         CreateAccountRequest accountRequest = new CreateAccountRequest(
                 message.getChatId(),
                 message.getFrom().getUserName(),

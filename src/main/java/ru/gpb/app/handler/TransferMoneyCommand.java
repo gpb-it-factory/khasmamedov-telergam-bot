@@ -6,6 +6,8 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.gpb.app.dto.CreateTransferRequest;
 import ru.gpb.app.service.AccountService;
 
+@ExpectedCommandParams(2)
+
 @Slf4j
 @Component
 public class TransferMoneyCommand implements Command {
@@ -49,14 +51,12 @@ public class TransferMoneyCommand implements Command {
     }
 
     @Override
-    public String executeCommand(Message message) {
-        String[] transferData = message.getText().substring("/transfer ".length()).split(" ", 2);
-
-        if (!isCommandGivenProperly(transferData)) {
+    public String executeCommand(Message message, String... params) {
+        if (!isCommandGivenProperly(params)) {
             return "Ввели неверную команду; \"/transfer [toTelegramUser] [amount]\" - верный ее формат!";
         }
 
-        String transferDatum = transferData[1];
+        String transferDatum = params[1];
         if (isMoneyFormatBad(transferDatum)) {
             return "Неверный формат суммы - должен быть дробный формат типа 123.456";
         }
@@ -64,7 +64,7 @@ public class TransferMoneyCommand implements Command {
         return accountService.makeAccountTransfer(
                 new CreateTransferRequest(
                         message.getFrom().getUserName(),
-                        transferData[0],
+                        params[0],
                         transferDatum
                 )
         );

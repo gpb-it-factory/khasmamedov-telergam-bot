@@ -13,5 +13,5 @@ public interface Command {
      */
     boolean needsServiceInteraction();
 
-    public String executeCommand(Message message);
+    String executeCommand(Message message, String... commandParams);
 }

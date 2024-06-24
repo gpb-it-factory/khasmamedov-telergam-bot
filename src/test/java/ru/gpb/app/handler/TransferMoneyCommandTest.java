@@ -29,18 +29,25 @@ class TransferMoneyCommandTest {
     @InjectMocks
     private TransferMoneyCommand command;
 
-    private String from = "Khasmamedov";
-    private String to = "paveldurov";
-    private String sum = "203605.20";
-
-    private String telegramMessage;
+    private String[] transferData;
 
     private CreateTransferRequest request;
 
+    private User user;
+
+    private Message mockedMessage;
+
     @BeforeEach
     public void setUp() {
-        telegramMessage = "/transfer " + to + " " + sum;
-        request = new CreateTransferRequest(from, to, sum);
+        mockedMessage = mock(Message.class);
+
+        transferData = new String[]{"paveldurov", "203605.20"};
+
+        user = new User();
+        user.setId(123L);
+        user.setUserName("Khasmamedov");
+
+        request = new CreateTransferRequest("Khasmamedov", "paveldurov", "203605.20");
     }
 
     @Test
@@ -57,11 +64,7 @@ class TransferMoneyCommandTest {
 
     @Test
     public void transferCommandWasNotExecutedDueToWrongParamsCount() {
-        Message mockedMessage = mock(Message.class);
-
-        when(mockedMessage.getText()).thenReturn("/transfer " + from);
-
-        String result = command.executeCommand(mockedMessage);
+        String result = command.executeCommand(mockedMessage, "");
 
         assertThat("Ввели неверную команду; \"/transfer [toTelegramUser] [amount]\" - верный ее формат!")
                 .isEqualTo(result);
@@ -69,14 +72,7 @@ class TransferMoneyCommandTest {
 
     @Test
     public void transferCommandWasNotExecutedDueToWrongSum() {
-        Message mockedMessage = mock(Message.class);
-        //User mockedUser = mock(User.class);
-
-        //when(mockedMessage.getFrom()).thenReturn(mockedUser);
-        //when(mockedUser.getUserName()).thenReturn(to);
-        when(mockedMessage.getText()).thenReturn("/transfer" + " " + to + " fivaproldg");
-
-        String result = command.executeCommand(mockedMessage);
+        String result = command.executeCommand(mockedMessage, "paveldurov", "fivaproldg");
 
         assertThat("Неверный формат суммы - должен быть дробный формат типа 123.456")
                 .isEqualTo(result);
@@ -84,17 +80,12 @@ class TransferMoneyCommandTest {
 
     @Test
     public void transferCommandWasExecuted() {
-        Message mockedMessage = mock(Message.class);
-        User mockedUser = mock(User.class);
-
-        when(mockedMessage.getFrom()).thenReturn(mockedUser);
-        when(mockedUser.getUserName()).thenReturn(from);
-        when(mockedMessage.getText()).thenReturn(telegramMessage);
+        when(mockedMessage.getFrom()).thenReturn(user);
 
         when(accountService.makeAccountTransfer(request))
                 .thenReturn("Перевод успешно выполнен, ID перевода: " + "52d2ef91-0b62-4d43-bb56-e7ec542ba8f8");
 
-        String result = command.executeCommand(mockedMessage);
+        String result = command.executeCommand(mockedMessage, transferData);
 
         assertThat("Перевод успешно выполнен, ID перевода: " + "52d2ef91-0b62-4d43-bb56-e7ec542ba8f8")
                 .isEqualTo(result);
@@ -102,28 +93,18 @@ class TransferMoneyCommandTest {
 
     @Test
     public void transferCommandWasNotExecuted() {
-        Message mockedMessage = mock(Message.class);
-        User mockedUser = mock(User.class);
-
-        when(mockedMessage.getFrom()).thenReturn(mockedUser);
-        when(mockedUser.getUserName()).thenReturn(from);
-        when(mockedMessage.getText()).thenReturn(telegramMessage);
+        when(mockedMessage.getFrom()).thenReturn(user);
 
         when(accountService.makeAccountTransfer(request)).thenReturn("Не могу совершить денежный перевод: " + "409");
 
-        String result = command.executeCommand(mockedMessage);
+        String result = command.executeCommand(mockedMessage, transferData);
 
         assertThat("Не могу совершить денежный перевод: " + "409").isEqualTo(result);
     }
 
     @Test
     public void transferCommandWasNotExecutedDueToHttpStatusCodeException() {
-        Message mockedMessage = mock(Message.class);
-        User mockedUser = mock(User.class);
-
-        when(mockedMessage.getFrom()).thenReturn(mockedUser);
-        when(mockedUser.getUserName()).thenReturn(from);
-        when(mockedMessage.getText()).thenReturn(telegramMessage);
+        when(mockedMessage.getFrom()).thenReturn(user);
 
         Error userCreationError = new Error(
                 "Произошло что-то ужасное, но станет лучше, честно",
@@ -131,35 +112,24 @@ class TransferMoneyCommandTest {
                 "123",
                 UUID.randomUUID()
         );
-        String expectedResponse = "Не могу выполнить денежный перевод, ошибка: " + convertErrorToJson(userCreationError);
 
+        String expectedResponse = "Не могу выполнить денежный перевод, ошибка: " + convertErrorToJson(userCreationError);
         when(accountService.makeAccountTransfer(request)).thenReturn(expectedResponse);
 
-        String result = command.executeCommand(mockedMessage);
+        String result = command.executeCommand(mockedMessage, transferData);
 
         assertThat(expectedResponse).isEqualTo(result);
     }
 
     @Test
     public void transferCommandWasNotExecutedDueToGeneralException() {
-        Message mockedMessage = mock(Message.class);
-        User mockedUser = mock(User.class);
+        when(mockedMessage.getFrom()).thenReturn(user);
 
-        when(mockedMessage.getFrom()).thenReturn(mockedUser);
-        when(mockedUser.getUserName()).thenReturn(from);
-        when(mockedMessage.getText()).thenReturn(telegramMessage);
-
-        Error userCreationError = new Error(
-                "Произошло что-то ужасное, но станет лучше, честно",
-                "GeneralError",
-                "123",
-                UUID.randomUUID()
-        );
         String expectedResponse = "Произошла серьезная ошибка во время выполнения денежного перевода: Unexpected error";
 
         when(accountService.makeAccountTransfer(request)).thenReturn(expectedResponse);
 
-        String result = command.executeCommand(mockedMessage);
+        String result = command.executeCommand(mockedMessage, transferData);
 
         assertThat(expectedResponse).isEqualTo(result);
     }

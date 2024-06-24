@@ -14,18 +14,20 @@ import java.util.Map;
 public class OutcomingHandlerImpl implements OutcomingHandler {
 
     private final Map<String, Command> messageMap;
+    private final CommandParamsChecker paramsChecker;
 
     @Autowired
-    public OutcomingHandlerImpl(Commandeer commandRegistry) {
+    public OutcomingHandlerImpl(Commandeer commandRegistry, CommandParamsChecker paramsChecker) {
         this.messageMap = commandRegistry.commandMsg();
+        this.paramsChecker = paramsChecker;
     }
 
     @Override
-    public SendMessage outputtingMessageSender(Message message) {
-        String command = message.getText();
+    public SendMessage outputtingMessageSender(Message message, String command, String commandParams) {
+
         String response;
         if (messageMap.containsKey(command)) {
-            response = messageMap.get(command).executeCommand(message);
+            response = paramsChecker.commandParamsCheck(messageMap.get(command), message, commandParams);
         } else {
             response = "no such command";
         }
