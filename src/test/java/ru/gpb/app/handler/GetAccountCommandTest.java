@@ -2,7 +2,7 @@ package ru.gpb.app.handler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -30,9 +30,9 @@ class GetAccountCommandTest {
     private GetAccountCommand command;
 
     private static Long userId;
-
-    @BeforeAll
-    static void setUp() {
+    
+    @BeforeEach
+    public void setUp() {
         userId = 123L;
     }
 
@@ -52,6 +52,7 @@ class GetAccountCommandTest {
     public void executeCommandReturnedAccount() {
         Message mockedMessage = mock(Message.class);
         when(mockedMessage.getChatId()).thenReturn(userId);
+
         AccountListResponse[] responses = new AccountListResponse[]{
                 new AccountListResponse(
                         UUID.randomUUID(),
@@ -71,8 +72,8 @@ class GetAccountCommandTest {
     @Test
     public void executeCommandReturnedNoAccounts() {
         Message mockedMessage = mock(Message.class);
-
         when(mockedMessage.getChatId()).thenReturn(userId);
+
         when(accountService.getAccount(userId)).thenReturn("Нет счетов у пользователя");
 
         String result = command.executeCommand(mockedMessage);
@@ -83,8 +84,8 @@ class GetAccountCommandTest {
     @Test
     public void executeCommandReturnedNoDefiniteAnswer() {
         Message mockedMessage = mock(Message.class);
-
         when(mockedMessage.getChatId()).thenReturn(userId);
+
         when(accountService.getAccount(userId))
                 .thenReturn("Не могу получить счета (пустой ответ // не найдено счетов)");
 
@@ -120,6 +121,7 @@ class GetAccountCommandTest {
     public void executeCommandGotGeneralException() {
         Message mockedMessage = mock(Message.class);
         when(mockedMessage.getChatId()).thenReturn(123L);
+
         String expectedResponse = "Произошла серьезная ошибка во время получения счетов: Unexpected error";
         when(accountService.getAccount(123L)).thenReturn(expectedResponse);
 

@@ -8,9 +8,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.gpb.app.config.Commandeer;
+import ru.gpb.app.dto.AccountListResponse;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -24,6 +27,15 @@ class OutcomingHandlerImplTest {
 
     @Mock
     private Command command;
+
+    @Mock
+    private RegisterUserCommand registerUserCommand;
+
+    @Mock
+    private CreateAccountCommand createAccountCommand;
+
+    @Mock
+    private GetAccountCommand getAccountCommand;
 
     private Message mockedMessage;
 
@@ -50,9 +62,73 @@ class OutcomingHandlerImplTest {
         mockedMessage = mock(Message.class);
         messageMap = new HashMap<>();
         messageMap.put("ALL_GOOD", command);
+        messageMap.put("/register", registerUserCommand);
+        messageMap.put("/createaccount", createAccountCommand);
+        messageMap.put("/currentbalance", getAccountCommand);
         when(commandeer.commandMsg()).thenReturn(messageMap);
 
         handler = new OutcomingHandlerImpl(commandeer);
+    }
+
+    @Test
+    public void registerUserCommandWasHandledProperly() {
+        when(mockedMessage.getText()).thenReturn("/register");
+        when(mockedMessage.getChatId()).thenReturn(123L);
+
+        when(messageMap.get("/register").executeCommand(mockedMessage)).thenReturn("Пользователь создан");
+
+        SendMessage expectedSendMessage = SendMessage.builder()
+                .chatId(mockedMessage.getChatId().toString())
+                .text("Пользователь создан")
+                .build();
+
+        SendMessage result = handler.outputtingMessageSender(mockedMessage);
+
+        assertThat(result).isEqualTo(expectedSendMessage);
+    }
+
+    @Test
+    public void createAccountCommandWasHandledProperly() {
+        when(mockedMessage.getText()).thenReturn("/createaccount");
+        when(mockedMessage.getChatId()).thenReturn(123L);
+
+        when(messageMap.get("/createaccount").executeCommand(mockedMessage)).thenReturn("Счет создан");
+
+        SendMessage expectedSendMessage = SendMessage.builder()
+                .chatId(mockedMessage.getChatId().toString())
+                .text("Счет создан")
+                .build();
+
+        SendMessage result = handler.outputtingMessageSender(mockedMessage);
+
+        assertThat(result).isEqualTo(expectedSendMessage);
+    }
+
+    @Test
+    public void currentBalanceCommandWasHandledProperly() {
+        when(mockedMessage.getText()).thenReturn("/currentbalance");
+        when(mockedMessage.getChatId()).thenReturn(123L);
+
+        AccountListResponse[] responses = new AccountListResponse[]{
+                new AccountListResponse(
+                        UUID.randomUUID(),
+                        "Деньги на шашлык",
+                        "203605.20"
+                )
+        };
+        String userAccounts = "Список счетов пользователя: " + Arrays.asList(responses);
+
+        when(messageMap.get("/currentbalance").executeCommand(mockedMessage))
+                .thenReturn("Список счетов пользователя: " + Arrays.asList(responses));
+
+        SendMessage expectedSendMessage = SendMessage.builder()
+                .chatId(mockedMessage.getChatId().toString())
+                .text("Список счетов пользователя: " + Arrays.asList(responses))
+                .build();
+
+        SendMessage result = handler.outputtingMessageSender(mockedMessage);
+
+        assertThat(result).isEqualTo(expectedSendMessage);
     }
 
     @Test
@@ -61,7 +137,6 @@ class OutcomingHandlerImplTest {
         when(mockedMessage.getChatId()).thenReturn(123L);
 
         when(messageMap.get("ALL_GOOD").executeCommand(mockedMessage)).thenReturn("GOOD_RESPONSE");
-        String mockedResponse = messageMap.get("ALL_GOOD").executeCommand(mockedMessage);
 
         SendMessage expectedSendMessage = SendMessage.builder()
                 .chatId(mockedMessage.getChatId().toString())

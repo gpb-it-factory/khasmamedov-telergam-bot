@@ -12,6 +12,7 @@ public class GetAccountCommand implements Command {
     public GetAccountCommand(AccountService accountService) {
         this.accountService = accountService;
     }
+
     @Override
     public String getBotCommand() {
         return "/currentbalance";
