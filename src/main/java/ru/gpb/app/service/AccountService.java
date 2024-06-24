@@ -7,7 +7,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import ru.gpb.app.dto.AccountListResponse;
 import ru.gpb.app.dto.CreateAccountRequest;
+import ru.gpb.app.dto.CreateTransferRequest;
+import ru.gpb.app.dto.CreateTransferResponse;
 
+import javax.validation.Valid;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Optional;
@@ -96,6 +99,49 @@ public class AccountService {
             return handleGetAccountGeneralException(e);
         }
     }
+
+    private String handleMakeAccountTransferResponse(ResponseEntity<CreateTransferResponse> response) {
+        HttpStatus currentStatus = response.getStatusCode();
+        if (HttpStatus.OK == currentStatus && response.getBody() != null) {
+            String transferId = response.getBody().transferId();
+            log.error("Перевод успешно выполнен, ID перевода: " + transferId);
+            return transferId;
+        } else {
+            log.error("Cannot make transfer, status: " + currentStatus);
+            return "Не могу совершить денежный перевод: " + currentStatus;
+        }
+    }
+
+    private String handleMakeAccountTransferHttpStatusCodeException(HttpStatusCodeException e) {
+        String responseErrorString = new String(e.getResponseBodyAsByteArray(), StandardCharsets.UTF_8);
+        log.error("Cannot make funds transfer, HttpStatusCodeException: " + responseErrorString);
+        return "Не могу выполнить денежный перевод, ошибка: " + responseErrorString;
+    }
+
+    private String handleMakeAccountTransferGeneralException(Exception e) {
+        String generalErrorMessage = e.getMessage();
+        log.error("Serious exception is happened while making funds transfer: " + generalErrorMessage, e);
+        return "Произошла серьезная ошибка во время выполнения денежного перевода: " + generalErrorMessage;
+    }
+
+    public String makeAccountTransfer(@Valid CreateTransferRequest request) {
+        try {
+            log.info("Creating transfer for account1: {} to account2: {} with amount {}",
+                    request.from(),
+                    request.to(),
+                    request.amount());
+            return handleMakeAccountTransferResponse(accountClient.makeAccountTransfer(request));
+        } catch (HttpStatusCodeException e) {
+            return handleMakeAccountTransferHttpStatusCodeException(e);
+        } catch (Exception e) {
+            return handleMakeAccountTransferGeneralException(e);
+        }
+    }
+
+
+
+
+
 
     //непонятная херня
     /*

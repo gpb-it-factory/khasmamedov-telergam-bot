@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import ru.gpb.app.dto.AccountListResponse;
 import ru.gpb.app.dto.CreateAccountRequest;
+import ru.gpb.app.dto.CreateTransferRequest;
+import ru.gpb.app.dto.CreateTransferResponse;
 
 @Service
 @Slf4j
@@ -30,5 +32,11 @@ public class RestAccountClient implements AccountClient {
         log.info("Using restTemplate for getting account");
         String url = String.format("/users/%d/accounts", chatId);
         return restTemplate.getForEntity(url, AccountListResponse[].class);
+    }
+
+    @Override
+    public ResponseEntity<CreateTransferResponse> makeAccountTransfer(CreateTransferRequest request) {
+        log.info("Using restTemplate for transferring money");
+        return restTemplate.postForEntity("/v2/transfers", request, CreateTransferResponse.class);
     }
 }
