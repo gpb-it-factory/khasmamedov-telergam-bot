@@ -53,6 +53,9 @@ class OutcomingHandlerImplTest {
 
     private OutcomingHandlerImpl handler;
 
+    @Mock
+    private CommandParamsChecker paramsChecker;
+
     /**
      * note: you are supposed to pass commandeer to OutcomingHandlerImpl since it actually invokes commandMsg inside
      * the constructor
@@ -87,12 +90,15 @@ class OutcomingHandlerImplTest {
         messageMap.put(transferStr, transferMoneyCommand);
         when(commandeer.commandMsg()).thenReturn(messageMap);
 
-        handler = new OutcomingHandlerImpl(commandeer);
+        handler = new OutcomingHandlerImpl(commandeer, paramsChecker);
     }
 
     @Test
     public void registerUserCommandWasHandledProperly() {
-        when(messageMap.get(registerStr).executeCommand(mockedMessage, emptyString))
+        when(paramsChecker.commandParamsCheck(
+                messageMap.get(registerStr),
+                mockedMessage,
+                emptyString))
                 .thenReturn("Пользователь создан");
 
         SendMessage expectedSendMessage = SendMessage.builder()
@@ -107,7 +113,10 @@ class OutcomingHandlerImplTest {
 
     @Test
     public void createAccountCommandWasHandledProperly() {
-        when(messageMap.get(createAccountStr).executeCommand(mockedMessage, emptyString))
+        when(paramsChecker.commandParamsCheck(
+                messageMap.get(createAccountStr),
+                mockedMessage,
+                emptyString))
                 .thenReturn("Счет создан");
 
         SendMessage expectedSendMessage = SendMessage.builder()
@@ -130,7 +139,10 @@ class OutcomingHandlerImplTest {
                 )
         };
 
-        when(messageMap.get(currentBalanceStr).executeCommand(mockedMessage, emptyString))
+        when(paramsChecker.commandParamsCheck(
+                messageMap.get(currentBalanceStr),
+                mockedMessage,
+                emptyString))
                 .thenReturn("Список счетов пользователя: " + Arrays.asList(responses));
 
         SendMessage expectedSendMessage = SendMessage.builder()
@@ -145,7 +157,10 @@ class OutcomingHandlerImplTest {
 
     @Test
     public void transferMoneyCommandWasHandledProperly() {
-        when(messageMap.get(transferStr).executeCommand(mockedMessage, "paveldurov 203605.20"))
+        when(paramsChecker.commandParamsCheck(
+                messageMap.get(transferStr),
+                mockedMessage,
+                "paveldurov 203605.20"))
                 .thenReturn("Перевод успешно выполнен, ID перевода: " + "52d2ef91-0b62-4d43-bb56-e7ec542ba8f8");
 
         SendMessage expectedSendMessage = SendMessage.builder()
@@ -160,7 +175,10 @@ class OutcomingHandlerImplTest {
 
     @Test
     public void outputtingMessageSenderHadCommand() {
-        when(messageMap.get("ALL_GOOD").executeCommand(mockedMessage, emptyString))
+        when(paramsChecker.commandParamsCheck(
+                messageMap.get("ALL_GOOD"),
+                mockedMessage,
+                emptyString))
                 .thenReturn("GOOD_RESPONSE");
 
         SendMessage expectedSendMessage = SendMessage.builder()

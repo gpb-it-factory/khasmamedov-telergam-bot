@@ -28,7 +28,7 @@ public class CommandParamsChecker {
         int supposedParams = annotation.value();
         if (providedParams != supposedParams) {
             log.warn("Wrong params quantity: supposed to be {}, but was: {}", supposedParams, providedParams);
-            return "Команда /" + command.getBotCommand() + " должна содержать " + supposedParams + " параметров";
+            return "Команда " + command.getBotCommand() + " должна содержать " + supposedParams + " параметра(ов)";
         }
 
         return command.executeCommand(message, commandParams);

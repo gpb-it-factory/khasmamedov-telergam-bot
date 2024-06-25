@@ -7,7 +7,6 @@ import ru.gpb.app.dto.CreateTransferRequest;
 import ru.gpb.app.service.AccountService;
 
 @ExpectedCommandParams(2)
-
 @Slf4j
 @Component
 public class TransferMoneyCommand implements Command {
@@ -28,16 +27,6 @@ public class TransferMoneyCommand implements Command {
         return true;
     }
 
-    private boolean isCommandGivenProperly(String[] transferData) {
-        int dataRealLength = transferData.length;
-        boolean result = true;
-        if (transferData.length != 2) {
-            log.error("Wrong parameters quantity came from Telegram: should be 2, but were: {}", dataRealLength);
-            result = false;
-        }
-        return result;
-    }
-
     private boolean isMoneyFormatBad(String transferDatum) {
         boolean result;
         try {
@@ -52,10 +41,6 @@ public class TransferMoneyCommand implements Command {
 
     @Override
     public String executeCommand(Message message, String... params) {
-        if (!isCommandGivenProperly(params)) {
-            return "Ввели неверную команду; \"/transfer [toTelegramUser] [amount]\" - верный ее формат!";
-        }
-
         String transferDatum = params[1];
         if (isMoneyFormatBad(transferDatum)) {
             return "Неверный формат суммы - должен быть дробный формат типа 123.456";

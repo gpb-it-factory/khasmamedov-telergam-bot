@@ -4,7 +4,6 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 @ExpectedCommandParams(0)
-
 @Component
 public class HelpCommand implements Command {
     @Override

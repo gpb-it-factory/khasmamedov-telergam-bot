@@ -63,14 +63,6 @@ class TransferMoneyCommandTest {
     }
 
     @Test
-    public void transferCommandWasNotExecutedDueToWrongParamsCount() {
-        String result = command.executeCommand(mockedMessage, "");
-
-        assertThat("Ввели неверную команду; \"/transfer [toTelegramUser] [amount]\" - верный ее формат!")
-                .isEqualTo(result);
-    }
-
-    @Test
     public void transferCommandWasNotExecutedDueToWrongSum() {
         String result = command.executeCommand(mockedMessage, "paveldurov", "fivaproldg");
 

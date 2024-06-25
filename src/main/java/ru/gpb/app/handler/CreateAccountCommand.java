@@ -5,6 +5,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.gpb.app.dto.CreateAccountRequest;
 import ru.gpb.app.service.AccountService;
 
+@ExpectedCommandParams(0)
 @Component
 public class CreateAccountCommand implements Command {
 
