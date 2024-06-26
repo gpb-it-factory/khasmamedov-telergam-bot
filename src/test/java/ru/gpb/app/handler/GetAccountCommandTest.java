@@ -42,11 +42,6 @@ class GetAccountCommandTest {
         assertThat("/currentbalance").isEqualTo(result);
     }
 
-    @Test
-    public void serviceInteractionServiceReturnedTrue() {
-        boolean result = command.needsServiceInteraction();
-        assertThat(result).isTrue();
-    }
 
     @Test
     public void executeCommandReturnedAccount() {

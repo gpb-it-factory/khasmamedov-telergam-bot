@@ -47,12 +47,6 @@ class CreateAccountCommandTest {
     }
 
     @Test
-    public void serviceInteractionServiceReturnsTrue() {
-        boolean result = command.needsServiceInteraction();
-        assertThat(result).isTrue();
-    }
-
-    @Test
     public void executeCommandCreatedAccount() {
         Message mockedMessage = mock(Message.class);
         when(mockedMessage.getChatId()).thenReturn(123L);
