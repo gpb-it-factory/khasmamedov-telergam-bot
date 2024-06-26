@@ -19,11 +19,6 @@ public class GetAccountCommand implements Command {
     }
 
     @Override
-    public boolean needsServiceInteraction() {
-        return true;
-    }
-
-    @Override
     public String executeCommand(Message message, String... params) {
         return accountService.getAccount(message.getChatId());
     }

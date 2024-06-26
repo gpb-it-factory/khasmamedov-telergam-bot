@@ -21,11 +21,6 @@ public class RegisterUserCommand implements Command {
     }
 
     @Override
-    public boolean needsServiceInteraction() {
-        return true;
-    }
-
-    @Override
     public String executeCommand(Message message, String... params) {
         CreateUserRequest request = new CreateUserRequest(message.getChatId(), message.getFrom().getUserName());
         return userService.register(request);

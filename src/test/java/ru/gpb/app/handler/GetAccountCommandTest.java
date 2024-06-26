@@ -43,12 +43,6 @@ class GetAccountCommandTest {
     }
 
     @Test
-    public void serviceInteractionServiceReturnedTrue() {
-        boolean result = command.needsServiceInteraction();
-        assertThat(result).isTrue();
-    }
-
-    @Test
     public void executeCommandReturnedAccount() {
         Message mockedMessage = mock(Message.class);
         when(mockedMessage.getChatId()).thenReturn(userId);

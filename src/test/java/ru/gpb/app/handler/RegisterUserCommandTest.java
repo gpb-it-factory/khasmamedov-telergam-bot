@@ -45,12 +45,6 @@ class RegisterUserCommandTest {
     }
 
     @Test
-    public void serviceInteractionServiceReturnedTrue() {
-        boolean result = command.needsServiceInteraction();
-        assertThat(result).isTrue();
-    }
-
-    @Test
     public void executeCommandRunFine() {
         Message mockedMessage = mock(Message.class);
         when(mockedMessage.getChatId()).thenReturn(123L);

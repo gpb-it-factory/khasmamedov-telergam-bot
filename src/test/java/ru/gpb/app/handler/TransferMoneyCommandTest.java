@@ -57,12 +57,6 @@ class TransferMoneyCommandTest {
     }
 
     @Test
-    public void serviceInteractionServiceReturnedTrue() {
-        boolean result = command.needsServiceInteraction();
-        assertThat(result).isTrue();
-    }
-
-    @Test
     public void transferCommandWasNotExecutedDueToWrongSum() {
         String result = command.executeCommand(mockedMessage, "paveldurov", "fivaproldg");
 

@@ -22,11 +22,6 @@ public class TransferMoneyCommand implements Command {
         return "/transfer";
     }
 
-    @Override
-    public boolean needsServiceInteraction() {
-        return true;
-    }
-
     private boolean isMoneyFormatBad(String transferDatum) {
         boolean result;
         try {

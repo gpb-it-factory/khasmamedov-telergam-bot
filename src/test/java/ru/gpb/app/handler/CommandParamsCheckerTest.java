@@ -107,11 +107,6 @@ class CommandParamsCheckerTest {
         }
 
         @Override
-        public boolean needsServiceInteraction() {
-            return false;
-        }
-
-        @Override
         public String executeCommand(Message message, String... params) {
             return "w/e";
         }
