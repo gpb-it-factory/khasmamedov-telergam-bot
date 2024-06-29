@@ -30,19 +30,22 @@ public class AccountService {
         if (statusCode == HttpStatus.NO_CONTENT) {
             log.info("Account is created");
             return "Счет создан";
-        } else if (statusCode == HttpStatus.CONFLICT) {
-            log.warn("Account already exists: " + response.getBody());
-            return "Такой счет у данного пользователя уже есть: " + statusCode;
-        } else {
-            log.error("Cannot create account, status: " + response.getBody());
-            return "Ошибка при создании счета: " + statusCode;
         }
+        log.error("Cannot create account, status: " + response.getBody());
+        return "Ошибка при создании счета: " + statusCode;
     }
 
     private String handleHttpStatusCodeException(HttpStatusCodeException e) {
+        String message;
         String responseErrorString = new String(e.getResponseBodyAsByteArray(), StandardCharsets.UTF_8);
-        log.error("Cannot register account, HttpStatusCodeException: " + responseErrorString);
-        return "Не могу зарегистрировать счет, ошибка: " + responseErrorString;
+        if (e.getStatusCode() == HttpStatus.CONFLICT) {
+            log.error("Account already exists: {}", responseErrorString);
+            message = "Счет уже зарегистрирован: " + HttpStatus.CONFLICT;
+        } else {
+            log.error("Cannot register account, HttpStatusCodeException: " + responseErrorString);
+            return "Не могу зарегистрировать счет, ошибка: " + responseErrorString;
+        }
+        return message;
     }
 
     private String handleGeneralException(Exception e) {
@@ -54,7 +57,9 @@ public class AccountService {
     public String openAccount(CreateAccountRequest request) {
         log.info("Creating account for userID: {} with accountName: {}", request.userId(), request.accountName());
         try {
-            return handleResponse(accountClient.openAccount(request));
+            ResponseEntity<Void> response = accountClient.openAccount(request);
+            log.info("sending request to middle to create acc " + response);
+            return handleResponse(response);
         } catch (HttpStatusCodeException e) {
             return handleHttpStatusCodeException(e);
         } catch (Exception e) {

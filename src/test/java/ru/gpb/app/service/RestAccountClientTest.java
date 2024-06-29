@@ -77,16 +77,6 @@ class RestAccountClientTest {
     }
 
     @Test
-    public void openAccountWasAlreadyDoneBefore() {
-        when(restTemplate.postForEntity(url, accountRequest, Void.class))
-                .thenReturn(new ResponseEntity<>(HttpStatus.NO_CONTENT));
-
-        ResponseEntity<Void> result = accountClient.openAccount(accountRequest);
-
-        assertThat(HttpStatus.NO_CONTENT).isEqualTo(result.getStatusCode());
-    }
-
-    @Test
     public void gettingAccountsReturnedNoData() {
         AccountListResponse[] accounts = {};
         ResponseEntity<AccountListResponse[]> responseEntity = new ResponseEntity<>(accounts, HttpStatus.OK);

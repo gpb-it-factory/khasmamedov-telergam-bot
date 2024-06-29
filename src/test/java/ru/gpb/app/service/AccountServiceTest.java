@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
 import ru.gpb.app.dto.AccountListResponse;
@@ -54,6 +55,16 @@ class AccountServiceTest {
     }
 
     @Test
+    public void registerAccountWasAlreadyDoneBefore() {
+        when(accountClient.openAccount(accountRequest))
+                .thenThrow(new HttpClientErrorException(HttpStatus.CONFLICT));
+
+        String result = service.openAccount(accountRequest);
+
+        assertThat("Счет уже зарегистрирован: " + HttpStatus.CONFLICT).isEqualTo(result);
+    }
+
+    @Test
     public void gettingAccountsWasOK() {
         AccountListResponse[] accounts = new AccountListResponse[]{
                 new AccountListResponse(
@@ -71,15 +82,6 @@ class AccountServiceTest {
         String expected = "Список счетов пользователя: " + Arrays.asList(accounts);
 
         assertThat(expected).isEqualTo(result);
-    }
-
-    @Test
-    public void registerAccountWasAlreadyDoneBefore() {
-        when(accountClient.openAccount(accountRequest)).thenReturn(new ResponseEntity<>(HttpStatus.CONFLICT));
-
-        String result = service.openAccount(accountRequest);
-
-        assertThat("Такой счет у данного пользователя уже есть: " + HttpStatus.CONFLICT).isEqualTo(result);
     }
 
     @Test

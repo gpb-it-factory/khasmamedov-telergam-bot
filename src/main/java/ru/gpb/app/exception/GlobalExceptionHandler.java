@@ -15,7 +15,7 @@ import java.util.UUID;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    public ResponseEntity<Error> errorResponseEntityBuilder(String message,
+    private ResponseEntity<Error> errorResponseEntityBuilder(String message,
                                                             String messageType,
                                                             String errorCode,
                                                             HttpStatus status) {

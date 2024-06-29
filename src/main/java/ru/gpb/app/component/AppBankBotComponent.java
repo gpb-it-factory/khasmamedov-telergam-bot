@@ -40,7 +40,6 @@ public class AppBankBotComponent extends TelegramLongPollingBot {
                 String commandParams = fullUserCommandWithoutGaps.substring(command.length()).strip();
 
                 SendMessage message = outcomingHandler.outputtingMessageSender(update.getMessage(), command, commandParams);
-                //SendMessage message = outcomingHandler.outputtingMessageSender(update.getMessage());
                 execute(message);
                 log.info("'{}' message just send to chat '{}'", message.getText(), message.getChatId());
             } catch (TelegramApiException e) {

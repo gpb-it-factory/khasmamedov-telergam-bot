@@ -24,35 +24,6 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    void errorResponseEntityBuilder() {
-        Error error = new Error(
-                "Такой счет у данного пользователя уже есть",
-                "AccountAlreadyExists",
-                "409",
-                UUID.randomUUID()
-        );
-        HttpStatus status = HttpStatus.CONFLICT;
-
-        ResponseEntity<Error> expectedEntity = ResponseEntity.status(status)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(error);
-
-        ResponseEntity<Error> actualEntity = globalExceptionHandler.errorResponseEntityBuilder(error.message(),
-                error.type(),
-                error.code(),
-                status);
-
-        assertAll("multiple assertions for errorResponseEntityBuilder",
-                () -> assertThat(expectedEntity.getStatusCode()).isEqualTo(actualEntity.getStatusCode()),
-                () -> assertThat(expectedEntity.getHeaders().getContentType()).isEqualTo(actualEntity.getHeaders().getContentType()),
-                () -> assertThat(actualEntity.getBody()).isNotNull(),
-                () -> assertThat(expectedEntity.getBody().message()).isEqualTo(actualEntity.getBody().message()),
-                () -> assertThat(expectedEntity.getBody().type()).isEqualTo(actualEntity.getBody().type()),
-                () -> assertThat(expectedEntity.getBody().code()).isEqualTo(actualEntity.getBody().code())
-        );
-    }
-
-    @Test
     void handleOfValidationException() {
         MethodArgumentNotValidException ex = mock(MethodArgumentNotValidException.class);
 
@@ -62,9 +33,8 @@ class GlobalExceptionHandlerTest {
                 "400",
                 UUID.randomUUID()
         );
-        HttpStatus status = HttpStatus.BAD_REQUEST;
 
-        ResponseEntity<Error> expectedEntity = ResponseEntity.status(status)
+        ResponseEntity<Error> expectedEntity = ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(error);
 

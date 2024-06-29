@@ -24,7 +24,7 @@ public class CommandParamsChecker {
             return "Ошибка: забыли аннотацию ExpectedCommandParams над классом: " + currClass;
         }
 
-        int providedParams = commandParams.length;
+        int providedParams = (commandParams.length == 1 && commandParams[0].isEmpty()) ? 0 : commandParams.length;
         int supposedParams = annotation.value();
         if (providedParams != supposedParams) {
             log.warn("Wrong params quantity: supposed to be {}, but was: {}", supposedParams, providedParams);
