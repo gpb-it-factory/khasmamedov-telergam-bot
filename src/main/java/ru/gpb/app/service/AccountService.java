@@ -70,10 +70,6 @@ public class AccountService {
     private String handleGetAccountResponse(Optional<ResponseEntity<AccountListResponse[]>> response) {
         if (response.isPresent() && response.get().getBody() != null) {
             AccountListResponse[] responses = response.get().getBody();
-            if (responses.length == 0) {
-                log.warn("No accounts found for user");
-                return "Нет счетов у пользователя";
-            }
             log.info("Users accounts found: {}", Arrays.asList(responses));
             return "Список счетов пользователя: " + Arrays.asList(responses);
         } else {
@@ -97,7 +93,13 @@ public class AccountService {
     public String getAccount(Long chatId) {
         log.info("Getting account details from userID: {}", chatId);
         try {
-            return handleGetAccountResponse(Optional.of(accountClient.getAccount(chatId)));
+            Optional<ResponseEntity<AccountListResponse[]>> response =
+                    Optional.of(accountClient.getAccount(chatId));
+            if (response.get().getStatusCode() == HttpStatus.NO_CONTENT) {
+                log.warn("No accounts found for user");
+                return "Нет счетов у пользователя";
+            }
+            return handleGetAccountResponse(response);
         } catch (HttpStatusCodeException e) {
             return handleGetAccountHttpStatusCodeException(e);
         } catch (Exception e) {

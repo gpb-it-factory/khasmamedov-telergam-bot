@@ -22,6 +22,7 @@ public class RestAccountClient implements AccountClient {
     }
 
     public ResponseEntity<Void> openAccount(CreateAccountRequest request) {
+
         log.info("Using restTemplate for creating account");
         String url = String.format("/users/%d/accounts", request.userId());
         return restTemplate.postForEntity(url, request, Void.class);

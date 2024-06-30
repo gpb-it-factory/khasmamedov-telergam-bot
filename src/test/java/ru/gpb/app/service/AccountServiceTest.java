@@ -87,7 +87,7 @@ class AccountServiceTest {
     @Test
     public void gettingAccountsReturnedNoData() {
         AccountListResponse[] accounts = {};
-        ResponseEntity<AccountListResponse[]> responseEntity = new ResponseEntity<>(accounts, HttpStatus.OK);
+        ResponseEntity<AccountListResponse[]> responseEntity = new ResponseEntity<>(accounts, HttpStatus.NO_CONTENT);
         when(accountClient.getAccount(userId)).thenReturn(responseEntity);
 
         String result = service.getAccount(userId);
