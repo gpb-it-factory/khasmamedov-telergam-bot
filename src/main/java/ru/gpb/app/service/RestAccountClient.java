@@ -1,10 +1,10 @@
 package ru.gpb.app.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 import ru.gpb.app.dto.AccountListResponse;
 import ru.gpb.app.dto.CreateAccountRequest;
 import ru.gpb.app.dto.CreateTransferRequest;
@@ -15,10 +15,11 @@ import ru.gpb.app.dto.CreateTransferResponse;
 public class RestAccountClient implements AccountClient {
 
     private final RestTemplate restTemplate;
+    private final WebClientService webClientService;
 
-    @Autowired
-    public RestAccountClient(RestTemplate restTemplate) {
+    public RestAccountClient(RestTemplate restTemplate, WebClient webClient, WebClientService webClientService) {
         this.restTemplate = restTemplate;
+        this.webClientService = webClientService;
     }
 
     public ResponseEntity<Void> openAccount(CreateAccountRequest request) {
@@ -35,9 +36,10 @@ public class RestAccountClient implements AccountClient {
         return restTemplate.getForEntity(url, AccountListResponse[].class);
     }
 
+
     @Override
     public ResponseEntity<CreateTransferResponse> makeAccountTransfer(CreateTransferRequest request) {
-        log.info("Using restTemplate for transferring money");
-        return restTemplate.postForEntity("/v2/transfers", request, CreateTransferResponse.class);
+        log.info("Using WebClient for transferring money");
+        return webClientService.makeAccountTransfer(request);
     }
 }

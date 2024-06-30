@@ -73,7 +73,7 @@ public class AccountService {
             log.info("Users accounts found: {}", Arrays.asList(responses));
             return "Список счетов пользователя: " + Arrays.asList(responses);
         } else {
-            log.error("Cannot retreive account details (empty response or no accounts were found)");
+            log.error("Cannot retrieve account details (empty response or no accounts were found)");
             return "Не могу получить счета (пустой ответ // не найдено счетов)";
         }
     }
@@ -111,8 +111,8 @@ public class AccountService {
         HttpStatus currentStatus = response.getStatusCode();
         if (HttpStatus.OK == currentStatus && response.getBody() != null) {
             String transferId = response.getBody().transferId();
-            log.error("Перевод успешно выполнен, ID перевода: " + transferId);
-            return transferId;
+            log.error("Transfer was successfully done, ID: " + transferId);
+            return "Перевод успешно выполнен, ID: " + transferId;
         } else {
             log.error("Cannot make transfer, status: " + currentStatus);
             return "Не могу совершить денежный перевод: " + currentStatus;
@@ -133,7 +133,7 @@ public class AccountService {
 
     public String makeAccountTransfer(@Valid CreateTransferRequest request) {
         try {
-            log.info("Creating transfer for account1: {} to account2: {} with amount {}",
+            log.info("Creating transfer from account1: {} to account2: {} with amount {}",
                     request.from(),
                     request.to(),
                     request.amount());
